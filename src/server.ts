@@ -5,6 +5,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import type { Config } from './config.js';
 import { HttpClient } from './http/client.js';
 import type { Logger } from './logging.js';
+import { type ResourceClients, createResourceClients } from './resources/index.js';
 import { registerAllTools } from './tools/index.js';
 import { ToolRegistry } from './tools/registry.js';
 
@@ -12,6 +13,7 @@ export interface ServerContext {
   config: Config;
   logger: Logger;
   httpClient: HttpClient;
+  resources: ResourceClients;
 }
 
 export interface McpServer {
@@ -35,10 +37,14 @@ export async function createServer(config: Config, logger: Logger): Promise<McpS
     );
   }
 
+  // Create resource clients
+  const resources = createResourceClients(httpClient, logger);
+
   const context: ServerContext = {
     config,
     logger,
     httpClient,
+    resources,
   };
 
   // Create MCP server
