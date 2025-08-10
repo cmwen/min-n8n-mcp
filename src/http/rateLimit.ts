@@ -20,7 +20,7 @@ export function createRateLimiter(config: RateLimitConfig, logger: Logger): Bott
   limiter.on('failed', (error, jobInfo) => {
     logger.warn(
       {
-        error: error.message,
+        error: String(error),
         retryCount: jobInfo.retryCount,
         options: jobInfo.options,
       },
@@ -31,9 +31,9 @@ export function createRateLimiter(config: RateLimitConfig, logger: Logger): Bott
   limiter.on('retry', (error, jobInfo) => {
     logger.debug(
       {
-        error: error.message,
+        error: String(error),
         retryCount: jobInfo.retryCount,
-        delay: jobInfo.options.delay,
+        delay: (jobInfo.options as any)?.delay,
       },
       'Retrying rate limited request'
     );
