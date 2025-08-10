@@ -1,0 +1,51 @@
+{
+  "name": "min-n8n-mcp",
+  "version": "0.1.0",
+  "description": "Local MCP server for n8n workflow management",
+  "main": "dist/index.js",
+  "bin": {
+    "min-n8n-mcp": "dist/cli.js"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx src/cli.ts",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --fix",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:integration": "vitest --config vitest.integration.config.ts",
+    "type-check": "tsc --noEmit",
+    "prepare": "husky",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "commander": "^12.0.0",
+    "zod": "^3.22.0",
+    "zod-to-json-schema": "^3.22.0",
+    "bottleneck": "^2.19.5",
+    "pino": "^8.17.0",
+    "undici": "^6.6.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.5.0",
+    "@types/node": "^20.11.0",
+    "husky": "^9.0.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0",
+    "@vitest/coverage-v8": "^1.2.0"
+  },
+  "keywords": ["mcp", "n8n", "workflow", "automation", "model-context-protocol"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cmwen/min-n8n-mcp.git"
+  },
+  "license": "MIT",
+  "files": ["dist"]
+}
