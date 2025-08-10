@@ -3,7 +3,7 @@
 import { Command } from 'commander';
 import { loadConfig } from './config.js';
 import { createLogger } from './logging.js';
-import { createServer } from './server.js';
+import { createServer, startHttpServer, startStdioServer } from './server.js';
 
 const program = new Command();
 
@@ -28,21 +28,51 @@ program
       const logger = createLogger(config.logLevel);
 
       if (options.printConfig) {
-        console.log(JSON.stringify(config, null, 2));
+        const sanitizedConfig = {
+          ...config,
+          n8nApiToken: '[REDACTED]',
+        };
+        console.log(JSON.stringify(sanitizedConfig, null, 2));
         process.exit(0);
       }
 
-      const server = await createServer(config, logger);
+      logger.info(
+        { config: { ...config, n8nApiToken: '[REDACTED]' } },
+        'Creating MCP server with config'
+      );
 
+      // Create server
+      const mcpServer = await createServer(config, logger);
+
+      // Start in appropriate mode
       if (config.httpMode) {
-        logger.info(`Starting MCP server in HTTP mode on port ${config.httpPort}`);
-        // TODO: Start HTTP server
+        const httpServer = await startHttpServer(mcpServer);
+
+        // Handle graceful shutdown for HTTP mode
+        process.on('SIGINT', async () => {
+          logger.info('Received SIGINT, shutting down gracefully');
+          httpServer.close(() => {
+            logger.info('HTTP server closed');
+            process.exit(0);
+          });
+        });
+
+        process.on('SIGTERM', async () => {
+          logger.info('Received SIGTERM, shutting down gracefully');
+          httpServer.close(() => {
+            logger.info('HTTP server closed');
+            process.exit(0);
+          });
+        });
       } else {
         logger.info('Starting MCP server in STDIO mode');
-        // TODO: Start STDIO server
+        await startStdioServer(mcpServer);
       }
     } catch (error) {
-      console.error('Failed to start server:', error);
+      console.error(
+        'Failed to start server:',
+        error instanceof Error ? error.message : String(error)
+      );
       process.exit(1);
     }
   });
