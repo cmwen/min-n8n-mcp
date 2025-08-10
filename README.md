@@ -1,0 +1,1 @@
+# min-n8n-mcp
