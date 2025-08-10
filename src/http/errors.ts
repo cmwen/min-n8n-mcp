@@ -46,7 +46,7 @@ export class HttpError extends Error {
 export class NetworkError extends Error {
   constructor(
     message: string,
-    public readonly cause?: Error
+    public override readonly cause?: Error
   ) {
     super(message);
     this.name = 'NetworkError';
