@@ -68,16 +68,29 @@ export class ToolRegistry {
         throw new Error(`Invalid input for tool '${name}': ${validation.error}`);
       }
 
+      const startTime = Date.now();
       try {
-        const startTime = Date.now();
         const result = await tool.handler(validation.data, context);
         const duration = Date.now() - startTime;
+
+        // Log performance metrics
+        if (duration > 1000) {
+          context.logger.warn(
+            {
+              toolName: name,
+              duration,
+              slow: true,
+            },
+            'Slow tool execution detected'
+          );
+        }
 
         context.logger.info(
           {
             toolName: name,
             duration,
             success: true,
+            resultSize: typeof result === 'string' ? result.length : JSON.stringify(result).length,
           },
           'Tool executed successfully'
         );
@@ -91,7 +104,7 @@ export class ToolRegistry {
           ],
         };
       } catch (error) {
-        const duration = Date.now() - Date.now();
+        const duration = Date.now() - startTime;
 
         context.logger.error(
           {
@@ -103,11 +116,9 @@ export class ToolRegistry {
           'Tool execution failed'
         );
 
-        // Re-throw with context
-        if (error instanceof Error) {
-          throw new Error(`Tool '${name}' failed: ${error.message}`);
-        }
-        throw new Error(`Tool '${name}' failed: ${String(error)}`);
+        // Include helpful context in error message
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        throw new Error(`Tool '${name}' failed: ${errorMessage}`);
       }
     });
 

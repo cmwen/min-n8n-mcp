@@ -1,34 +1,74 @@
+import type { ToolInputs } from '../schemas/index.js';
 import type { ToolRegistry } from './registry.js';
 import { createTool } from './registry.js';
 
 export async function registerExecutionTools(registry: ToolRegistry): Promise<void> {
-  // Placeholder implementations - will be implemented in Stage 5
-
   registry.register(
     createTool(
       'listExecutions',
-      'List workflow executions with optional filtering',
-      async (input, context) => {
-        // TODO: Implement in Stage 5
-        context.logger.info('listExecutions called (placeholder)');
-        return { message: 'Tool not yet implemented' };
+      'List workflow executions with optional filtering by workflow, status, and data inclusion',
+      async (input: ToolInputs['listExecutions'], context) => {
+        const result = await context.resources.executions.list(input.query || {});
+
+        context.logger.info(
+          {
+            totalFetched: result.totalFetched,
+            pagesFetched: result.pagesFetched,
+            filters: input.query,
+          },
+          'Listed executions'
+        );
+
+        return {
+          executions: result.data,
+          pagination: {
+            totalFetched: result.totalFetched,
+            pagesFetched: result.pagesFetched,
+            nextCursor: result.nextCursor,
+          },
+        };
       }
     )
   );
 
   registry.register(
-    createTool('getExecution', 'Get a specific execution by ID', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('getExecution called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'getExecution',
+      'Get detailed information about a specific execution',
+      async (input: ToolInputs['getExecution'], context) => {
+        const execution = await context.resources.executions.get(input.id, {
+          includeData: input.includeData,
+        });
+
+        context.logger.info(
+          {
+            executionId: input.id,
+            includeData: input.includeData,
+            status: execution.status,
+          },
+          'Retrieved execution'
+        );
+
+        return execution;
+      }
+    )
   );
 
   registry.register(
-    createTool('deleteExecution', 'Delete an execution record', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('deleteExecution called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'deleteExecution',
+      'Delete an execution record permanently',
+      async (input: ToolInputs['deleteExecution'], context) => {
+        const result = await context.resources.executions.delete(input.id);
+
+        context.logger.info({ executionId: input.id }, 'Deleted execution');
+
+        return {
+          success: true,
+          executionId: input.id,
+          message: 'Execution deleted successfully',
+        };
+      }
+    )
   );
 }

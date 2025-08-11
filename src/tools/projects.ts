@@ -1,65 +1,179 @@
+import type { ToolInputs } from '../schemas/index.js';
 import type { ToolRegistry } from './registry.js';
 import { createTool } from './registry.js';
 
 export async function registerProjectTools(registry: ToolRegistry): Promise<void> {
-  // Placeholder implementations - will be implemented in Stage 5
-
   registry.register(
-    createTool('createProject', 'Create a new project', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('createProject called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'createProject',
+      'Create a new project for organizing workflows, credentials, and team collaboration',
+      async (input: ToolInputs['createProject'], context) => {
+        const project = await context.resources.projects.create(input.data);
+
+        context.logger.info(
+          {
+            projectId: project.id,
+            name: project.name,
+            type: project.type,
+          },
+          'Created project'
+        );
+
+        return project;
+      }
+    )
   );
 
   registry.register(
-    createTool('listProjects', 'List all projects', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('listProjects called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'listProjects',
+      'List all projects available to the current user',
+      async (input: ToolInputs['listProjects'], context) => {
+        const result = await context.resources.projects.list(input.query || {});
+
+        context.logger.info(
+          {
+            totalFetched: result.totalFetched,
+          },
+          'Listed projects'
+        );
+
+        return {
+          projects: result.data,
+          pagination: {
+            totalFetched: result.totalFetched,
+            pagesFetched: result.pagesFetched,
+            nextCursor: result.nextCursor,
+          },
+        };
+      }
+    )
   );
 
   registry.register(
-    createTool('updateProject', 'Update an existing project', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('updateProject called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'updateProject',
+      'Update the properties of an existing project',
+      async (input: ToolInputs['updateProject'], context) => {
+        const project = await context.resources.projects.update(input.id, input.data);
+
+        context.logger.info(
+          {
+            projectId: input.id,
+            updatedFields: Object.keys(input.data),
+          },
+          'Updated project'
+        );
+
+        return project;
+      }
+    )
   );
 
   registry.register(
-    createTool('deleteProject', 'Delete a project', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('deleteProject called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'deleteProject',
+      'Delete a project permanently along with all its associated resources',
+      async (input: ToolInputs['deleteProject'], context) => {
+        const result = await context.resources.projects.delete(input.id);
+
+        context.logger.info({ projectId: input.id }, 'Deleted project');
+
+        return {
+          success: true,
+          projectId: input.id,
+          message: 'Project deleted successfully',
+        };
+      }
+    )
   );
 
   registry.register(
-    createTool('addUsersToProject', 'Add users to a project', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('addUsersToProject called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'addUsersToProject',
+      'Add one or more users to a project with specified roles',
+      async (input: ToolInputs['addUsersToProject'], context) => {
+        const results = [];
+        for (const user of input.users) {
+          const result = await context.resources.projects.addUser(input.projectId, {
+            userId: user.id,
+            role: (user.role as any) || 'viewer',
+          });
+          results.push(result);
+        }
+
+        context.logger.info(
+          {
+            projectId: input.projectId,
+            userCount: input.users.length,
+            users: input.users.map((u) => ({ id: u.id, role: u.role })),
+          },
+          'Added users to project'
+        );
+
+        return {
+          success: true,
+          projectId: input.projectId,
+          usersAdded: input.users.length,
+          results,
+          message: 'Users added to project successfully',
+        };
+      }
+    )
   );
 
   registry.register(
-    createTool('deleteUserFromProject', 'Remove user from a project', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('deleteUserFromProject called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'deleteUserFromProject',
+      'Remove a user from a project',
+      async (input: ToolInputs['deleteUserFromProject'], context) => {
+        const result = await context.resources.projects.removeUser(input.projectId, input.userId);
+
+        context.logger.info(
+          {
+            projectId: input.projectId,
+            userId: input.userId,
+          },
+          'Removed user from project'
+        );
+
+        return {
+          success: true,
+          projectId: input.projectId,
+          userId: input.userId,
+          message: 'User removed from project successfully',
+        };
+      }
+    )
   );
 
   registry.register(
     createTool(
       'changeUserRoleInProject',
-      'Change user role in a project',
-      async (input, context) => {
-        // TODO: Implement in Stage 5
-        context.logger.info('changeUserRoleInProject called (placeholder)');
-        return { message: 'Tool not yet implemented' };
+      'Change the role of a user within a specific project',
+      async (input: ToolInputs['changeUserRoleInProject'], context) => {
+        const result = await context.resources.projects.updateUserRole(
+          input.projectId,
+          input.userId,
+          input.role
+        );
+
+        context.logger.info(
+          {
+            projectId: input.projectId,
+            userId: input.userId,
+            newRole: input.role,
+          },
+          'Changed user role in project'
+        );
+
+        return {
+          success: true,
+          projectId: input.projectId,
+          userId: input.userId,
+          role: input.role,
+          message: 'User role changed successfully',
+        };
       }
     )
   );

@@ -138,6 +138,9 @@ export const ToolInputSchemas = {
     id: IdSchema,
     projectId: IdSchema,
   }),
+  getWorkflowStats: z.object({
+    id: IdSchema,
+  }),
 
   // Execution tools
   listExecutions: z.object({
