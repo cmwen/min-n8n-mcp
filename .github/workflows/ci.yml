@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [20]
+    
+    steps:
+    - uses: actions/checkout@v4
+        
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: "pnpm"
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    
+    - name: Type check
+      run: pnpm type-check
+    
+    - name: Lint
+      run: pnpm lint
+    
+    - name: Build
+      run: pnpm build
+    
+    - name: Run unit tests
+      run: pnpm test:unit
+    
+    - name: Run integration tests
+      run: pnpm test:integration
+      env:
+        TEST_N8N_URL: ${{ secrets.TEST_N8N_URL }}
+        TEST_N8N_TOKEN: ${{ secrets.TEST_N8N_TOKEN }}
+    
+    - name: Generate coverage report
+      run: pnpm test:coverage
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
