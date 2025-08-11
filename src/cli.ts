@@ -46,7 +46,7 @@ program
 
       // Start in appropriate mode
       if (config.httpMode) {
-        const httpServer = await startHttpServer(mcpServer);
+        const httpServer = startHttpServer(mcpServer);
 
         // Handle graceful shutdown for HTTP mode
         process.on('SIGINT', async () => {

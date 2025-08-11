@@ -269,15 +269,23 @@ export type ToolInputs = {
   [K in keyof typeof ToolInputSchemas]: z.infer<(typeof ToolInputSchemas)[K]>;
 };
 
-// Convert Zod schemas to JSON Schema
+// Convert Zod schemas to JSON Schema (not used by MCP tools, but kept for compatibility)
 export function createToolJsonSchemas() {
   const schemas: Record<string, any> = {};
 
   for (const [toolName, zodSchema] of Object.entries(ToolInputSchemas)) {
-    schemas[toolName] = zodToJsonSchema(zodSchema, {
+    const jsonSchema = zodToJsonSchema(zodSchema, {
       name: `${toolName}Input`,
       $refStrategy: 'none', // Inline all references
     });
+
+    // Ensure the root schema has type: "object" as required by MCP
+    schemas[toolName] = {
+      type: 'object',
+      ...jsonSchema,
+      // Remove the title that zodToJsonSchema sometimes adds
+      title: undefined,
+    };
   }
 
   return schemas;

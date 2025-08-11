@@ -1,6 +1,5 @@
-import type { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import { type ToolInputs, createToolJsonSchemas, safeValidateToolInput } from '../schemas/index.js';
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { ToolInputSchemas, type ToolInputs, safeValidateToolInput } from '../schemas/index.js';
 import type { ServerContext } from '../server.js';
 
 export interface ToolDefinition {
@@ -12,11 +11,6 @@ export interface ToolDefinition {
 
 export class ToolRegistry {
   private tools = new Map<string, ToolDefinition>();
-  private jsonSchemas: Record<string, any>;
-
-  constructor() {
-    this.jsonSchemas = createToolJsonSchemas();
-  }
 
   register(tool: ToolDefinition): void {
     this.tools.set(tool.name, tool);
@@ -28,99 +22,85 @@ export class ToolRegistry {
     }
   }
 
-  async setupMcpHandlers(server: Server, context: ServerContext): Promise<void> {
-    // List tools handler
-    server.setRequestHandler(ListToolsRequestSchema, async () => {
-      const tools = Array.from(this.tools.values()).map((tool) => ({
-        name: tool.name,
-        description: tool.description,
-        inputSchema: tool.inputSchema,
-      }));
+  async setupMcpHandlers(server: McpServer, context: ServerContext): Promise<void> {
+    // Register all tools with the high-level McpServer
+    for (const [toolName, toolDef] of this.tools) {
+      server.registerTool(
+        toolName,
+        {
+          description: toolDef.description,
+          inputSchema: ToolInputSchemas[toolName as keyof typeof ToolInputSchemas].shape,
+        },
+        async (args: any) => {
+          context.logger.debug({ toolName, args }, 'Tool call requested');
 
-      context.logger.debug({ toolCount: tools.length }, 'Listed available tools');
+          try {
+            // Validate input
+            const validation = safeValidateToolInput(toolName as keyof ToolInputs, args);
+            if (!validation.success) {
+              context.logger.error(
+                {
+                  toolName,
+                  error: validation.error,
+                  args,
+                },
+                'Tool input validation failed'
+              );
+              throw new Error(`Invalid input for tool '${toolName}': ${validation.error}`);
+            }
 
-      return { tools };
-    });
+            const startTime = Date.now();
+            const result = await toolDef.handler(validation.data, context);
+            const duration = Date.now() - startTime;
 
-    // Call tool handler
-    server.setRequestHandler(CallToolRequestSchema, async (request) => {
-      const { name, arguments: args } = request.params;
+            // Log performance metrics
+            if (duration > 1000) {
+              context.logger.warn(
+                {
+                  toolName,
+                  duration,
+                  slow: true,
+                },
+                'Slow tool execution detected'
+              );
+            }
 
-      context.logger.debug({ toolName: name }, 'Tool call requested');
+            context.logger.info(
+              {
+                toolName,
+                duration,
+                success: true,
+                resultSize:
+                  typeof result === 'string' ? result.length : JSON.stringify(result).length,
+              },
+              'Tool executed successfully'
+            );
 
-      const tool = this.tools.get(name);
-      if (!tool) {
-        context.logger.error({ toolName: name }, 'Tool not found');
-        throw new Error(`Tool '${name}' not found`);
-      }
+            return {
+              content: [
+                {
+                  type: 'text' as const,
+                  text: typeof result === 'string' ? result : JSON.stringify(result, null, 2),
+                },
+              ],
+            };
+          } catch (error) {
+            context.logger.error(
+              {
+                toolName,
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+              },
+              'Tool execution failed'
+            );
 
-      // Validate input
-      const validation = safeValidateToolInput(name as keyof ToolInputs, args);
-      if (!validation.success) {
-        context.logger.error(
-          {
-            toolName: name,
-            error: validation.error,
-            args,
-          },
-          'Tool input validation failed'
-        );
-        throw new Error(`Invalid input for tool '${name}': ${validation.error}`);
-      }
-
-      const startTime = Date.now();
-      try {
-        const result = await tool.handler(validation.data, context);
-        const duration = Date.now() - startTime;
-
-        // Log performance metrics
-        if (duration > 1000) {
-          context.logger.warn(
-            {
-              toolName: name,
-              duration,
-              slow: true,
-            },
-            'Slow tool execution detected'
-          );
+            // Include helpful context in error message
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error(`Tool '${toolName}' failed: ${errorMessage}`);
+          }
         }
-
-        context.logger.info(
-          {
-            toolName: name,
-            duration,
-            success: true,
-            resultSize: typeof result === 'string' ? result.length : JSON.stringify(result).length,
-          },
-          'Tool executed successfully'
-        );
-
-        return {
-          content: [
-            {
-              type: 'text',
-              text: typeof result === 'string' ? result : JSON.stringify(result, null, 2),
-            },
-          ],
-        };
-      } catch (error) {
-        const duration = Date.now() - startTime;
-
-        context.logger.error(
-          {
-            toolName: name,
-            duration,
-            error: error instanceof Error ? error.message : String(error),
-            success: false,
-          },
-          'Tool execution failed'
-        );
-
-        // Include helpful context in error message
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        throw new Error(`Tool '${name}' failed: ${errorMessage}`);
-      }
-    });
+      );
+    }
 
     context.logger.info(
       {
@@ -144,18 +124,15 @@ export class ToolRegistry {
   }
 }
 
-// Factory function to create tools with proper typing
 export function createTool<T extends keyof ToolInputs>(
   name: T,
   description: string,
   handler: (input: ToolInputs[T], context: ServerContext) => Promise<any>
 ): ToolDefinition {
-  const jsonSchemas = createToolJsonSchemas();
-
   return {
     name,
     description,
-    inputSchema: jsonSchemas[name],
+    inputSchema: ToolInputSchemas[name].shape,
     handler: handler as any,
   };
 }
