@@ -165,7 +165,7 @@ describe('Tool Utils', () => {
     });
 
     it('should handle empty nextCursor', () => {
-      const data = [];
+      const data: any[] = [];
       const pagination = {
         totalFetched: 0,
         pagesFetched: 1,
