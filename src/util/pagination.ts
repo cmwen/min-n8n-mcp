@@ -7,6 +7,7 @@ export interface PaginationOptions {
   autoPaginate?: boolean;
   maxPages?: number;
   maxItems?: number;
+  queryParams?: Record<string, any>;
 }
 
 export interface PaginatedResponse<T> {
@@ -100,6 +101,7 @@ export class PaginationHelper {
       autoPaginate = false,
       maxPages = 10,
       maxItems = 1000,
+      queryParams = {},
     } = options;
 
     let allData: T[] = [];
@@ -114,12 +116,16 @@ export class PaginationHelper {
         limit,
         maxPages,
         maxItems,
+        queryParams,
       },
       'Starting pagination fetch'
     );
 
     while (pagesFetched < maxPages && totalFetched < maxItems) {
-      const params: Record<string, any> = { limit };
+      const params: Record<string, any> = {
+        ...queryParams,
+        limit,
+      };
       if (currentCursor) {
         params.cursor = currentCursor;
       }

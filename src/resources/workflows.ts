@@ -60,10 +60,14 @@ export class WorkflowResourceClient {
 
     this.logger.debug({ params, paginationOptions }, 'Listing workflows');
 
+    // Separate pagination params from query params
+    const { limit, cursor, ...queryParams } = params;
+
     return this.pagination.fetchAll('/workflows', {
       ...paginationOptions,
-      limit: params.limit,
-      cursor: params.cursor,
+      limit,
+      cursor,
+      queryParams,
     });
   }
 
