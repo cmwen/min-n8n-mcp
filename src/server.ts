@@ -1,10 +1,9 @@
-
-import express from 'express';
 import { randomUUID } from 'node:crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
+import express from 'express';
 import type { Config } from './config.js';
 import { HttpClient } from './http/client.js';
 import type { Logger } from './logging.js';
@@ -103,7 +102,6 @@ export async function startStdioServer(mcpServer: MinN8nMcpServer): Promise<void
     process.exit(0);
   });
 }
-
 
 export function startHttpServer(mcpServer: MinN8nMcpServer): any {
   const { server, context } = mcpServer;
