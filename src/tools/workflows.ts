@@ -1,101 +1,270 @@
+import type { ToolInputs } from '../schemas/index.js';
 import type { ToolRegistry } from './registry.js';
 import { createTool } from './registry.js';
 
 export async function registerWorkflowTools(registry: ToolRegistry): Promise<void> {
-  // Placeholder implementations - will be implemented in Stage 5
-
   registry.register(
     createTool(
       'listWorkflows',
-      'List n8n workflows with optional filtering',
-      async (input, context) => {
-        // TODO: Implement in Stage 5
-        context.logger.info('listWorkflows called (placeholder)');
-        return { message: 'Tool not yet implemented' };
+      'List n8n workflows with optional filtering by active status, name, tags, or project',
+      async (input: ToolInputs['listWorkflows'], context) => {
+        const result = await context.resources.workflows.list(input.query || {});
+
+        context.logger.info(
+          {
+            totalFetched: result.totalFetched,
+            pagesFetched: result.pagesFetched,
+            hasMore: !!result.nextCursor,
+          },
+          'Listed workflows'
+        );
+
+        return {
+          workflows: result.data,
+          pagination: {
+            totalFetched: result.totalFetched,
+            pagesFetched: result.pagesFetched,
+            nextCursor: result.nextCursor,
+          },
+        };
       }
     )
   );
 
   registry.register(
-    createTool('getWorkflow', 'Get a specific workflow by ID', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('getWorkflow called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'getWorkflow',
+      'Get a specific workflow by ID, optionally excluding pinned data',
+      async (input: ToolInputs['getWorkflow'], context) => {
+        const workflow = await context.resources.workflows.get(input.id, {
+          excludePinnedData: input.excludePinnedData,
+        });
+
+        context.logger.info({ workflowId: input.id }, 'Retrieved workflow');
+
+        return workflow;
+      }
+    )
   );
 
   registry.register(
-    createTool('createWorkflow', 'Create a new workflow', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('createWorkflow called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'createWorkflow',
+      'Create a new workflow with specified configuration',
+      async (input: ToolInputs['createWorkflow'], context) => {
+        const workflow = await context.resources.workflows.create(input.data);
+
+        context.logger.info(
+          {
+            workflowId: workflow.id,
+            name: workflow.name,
+          },
+          'Created workflow'
+        );
+
+        return workflow;
+      }
+    )
   );
 
   registry.register(
-    createTool('updateWorkflow', 'Update an existing workflow', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('updateWorkflow called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'updateWorkflow',
+      'Update an existing workflow with new configuration',
+      async (input: ToolInputs['updateWorkflow'], context) => {
+        const workflow = await context.resources.workflows.update(input.id, input.data);
+
+        context.logger.info(
+          {
+            workflowId: input.id,
+            updatedFields: Object.keys(input.data),
+          },
+          'Updated workflow'
+        );
+
+        return workflow;
+      }
+    )
   );
 
   registry.register(
-    createTool('deleteWorkflow', 'Delete a workflow', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('deleteWorkflow called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'deleteWorkflow',
+      'Delete a workflow permanently',
+      async (input: ToolInputs['deleteWorkflow'], context) => {
+        const result = await context.resources.workflows.delete(input.id);
+
+        context.logger.info({ workflowId: input.id }, 'Deleted workflow');
+
+        return {
+          success: true,
+          workflowId: input.id,
+          message: 'Workflow deleted successfully',
+        };
+      }
+    )
   );
 
   registry.register(
-    createTool('activateWorkflow', 'Activate a workflow', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('activateWorkflow called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'activateWorkflow',
+      'Activate a workflow to enable automatic execution',
+      async (input: ToolInputs['activateWorkflow'], context) => {
+        const result = await context.resources.workflows.activate(input.id);
+
+        context.logger.info({ workflowId: input.id }, 'Activated workflow');
+
+        return {
+          success: true,
+          workflowId: input.id,
+          status: 'active',
+          message: 'Workflow activated successfully',
+        };
+      }
+    )
   );
 
   registry.register(
-    createTool('deactivateWorkflow', 'Deactivate a workflow', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('deactivateWorkflow called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'deactivateWorkflow',
+      'Deactivate a workflow to prevent automatic execution',
+      async (input: ToolInputs['deactivateWorkflow'], context) => {
+        const result = await context.resources.workflows.deactivate(input.id);
+
+        context.logger.info({ workflowId: input.id }, 'Deactivated workflow');
+
+        return {
+          success: true,
+          workflowId: input.id,
+          status: 'inactive',
+          message: 'Workflow deactivated successfully',
+        };
+      }
+    )
   );
 
   registry.register(
-    createTool('runWorkflow', 'Run a workflow with optional input data', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('runWorkflow called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'runWorkflow',
+      'Execute a workflow manually with optional input data',
+      async (input: ToolInputs['runWorkflow'], context) => {
+        const execution = await context.resources.workflows.run(input.id, input.input);
+
+        context.logger.info(
+          {
+            workflowId: input.id,
+            executionId: execution.id,
+            hasInput: !!input.input,
+          },
+          'Started workflow execution'
+        );
+
+        return {
+          execution,
+          workflowId: input.id,
+          message: 'Workflow execution started',
+        };
+      }
+    )
   );
 
   registry.register(
-    createTool('getWorkflowTags', 'Get tags associated with a workflow', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('getWorkflowTags called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'getWorkflowTags',
+      'Get all tags associated with a workflow',
+      async (input: ToolInputs['getWorkflowTags'], context) => {
+        const tags = await context.resources.workflows.getTags(input.id);
+
+        context.logger.info(
+          {
+            workflowId: input.id,
+            tagCount: Array.isArray(tags) ? tags.length : 0,
+          },
+          'Retrieved workflow tags'
+        );
+
+        return {
+          workflowId: input.id,
+          tags,
+        };
+      }
+    )
   );
 
   registry.register(
-    createTool('updateWorkflowTags', 'Update tags for a workflow', async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('updateWorkflowTags called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    })
+    createTool(
+      'updateWorkflowTags',
+      'Update the tags associated with a workflow',
+      async (input: ToolInputs['updateWorkflowTags'], context) => {
+        const result = await context.resources.workflows.updateTags(input.id, input.tags);
+
+        context.logger.info(
+          {
+            workflowId: input.id,
+            tagCount: input.tags.length,
+            tags: input.tags,
+          },
+          'Updated workflow tags'
+        );
+
+        return {
+          success: true,
+          workflowId: input.id,
+          tags: input.tags,
+          message: 'Workflow tags updated successfully',
+        };
+      }
+    )
   );
 
   registry.register(
     createTool(
       'transferWorkflow',
-      'Transfer workflow to another project',
-      async (input, context) => {
-        // TODO: Implement in Stage 5
-        context.logger.info('transferWorkflow called (placeholder)');
-        return { message: 'Tool not yet implemented' };
+      'Transfer a workflow to a different project',
+      async (input: ToolInputs['transferWorkflow'], context) => {
+        const result = await context.resources.workflows.transfer(input.id, input.projectId);
+
+        context.logger.info(
+          {
+            workflowId: input.id,
+            targetProjectId: input.projectId,
+          },
+          'Transferred workflow'
+        );
+
+        return {
+          success: true,
+          workflowId: input.id,
+          projectId: input.projectId,
+          message: 'Workflow transferred successfully',
+        };
+      }
+    )
+  );
+
+  registry.register(
+    createTool(
+      'getWorkflowStats',
+      'Get execution statistics and recent activity for a workflow',
+      async (input: ToolInputs['getWorkflowStats'], context) => {
+        const stats = await context.resources.workflows.getStats(input.id);
+
+        context.logger.info(
+          {
+            workflowId: input.id,
+            totalExecutions: stats.executions.total,
+            successRate:
+              stats.executions.total > 0
+                ? `${((stats.executions.success / stats.executions.total) * 100).toFixed(1)}%`
+                : 'N/A',
+          },
+          'Retrieved workflow stats'
+        );
+
+        return {
+          workflowId: input.id,
+          stats,
+        };
       }
     )
   );

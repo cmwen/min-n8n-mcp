@@ -5,7 +5,7 @@ import { DEFAULT_CACHE_OPTIONS, SimpleCache } from '../util/cache.js';
 export interface CredentialData {
   name: string;
   type: string;
-  data: any;
+  data?: any;
   projectId?: string;
 }
 
