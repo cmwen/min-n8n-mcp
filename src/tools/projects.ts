@@ -29,7 +29,7 @@ export async function registerProjectTools(registry: ToolRegistry): Promise<void
       'listProjects',
       'List all projects available to the current user',
       async (input: ToolInputs['listProjects'], context) => {
-        const result = await context.resources.projects.list(input.query || {});
+        const result = await context.resources.projects.list(input);
 
         context.logger.info(
           {

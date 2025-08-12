@@ -56,7 +56,7 @@ describe('Workflow Tools', () => {
       await registerWorkflowTools(registry);
       const tool = registry.getToolDefinition('listWorkflows')!;
 
-      const result = await tool.handler({ query: { limit: 10 } }, mockContext);
+      const result = await tool.handler({ limit: 10 }, mockContext);
 
       expect(mockWorkflows.list).toHaveBeenCalledWith({ limit: 10 });
       expect(result).toEqual({
@@ -82,7 +82,7 @@ describe('Workflow Tools', () => {
       await registerWorkflowTools(registry);
       const tool = registry.getToolDefinition('listWorkflows')!;
 
-      const result = await tool.handler({ query: {} }, mockContext);
+      const result = await tool.handler({}, mockContext);
 
       expect(mockWorkflows.list).toHaveBeenCalledWith({});
       expect(result.workflows).toEqual([]);
@@ -101,7 +101,7 @@ describe('Workflow Tools', () => {
       await registerWorkflowTools(registry);
       const tool = registry.getToolDefinition('listWorkflows')!;
 
-      const result = await tool.handler({ query: { active: true } }, mockContext);
+      const result = await tool.handler({ active: true }, mockContext);
 
       expect(mockWorkflows.list).toHaveBeenCalledWith({ active: true });
       expect(result.workflows).toEqual(mockResult.data);
@@ -120,7 +120,7 @@ describe('Workflow Tools', () => {
       await registerWorkflowTools(registry);
       const tool = registry.getToolDefinition('listWorkflows')!;
 
-      const result = await tool.handler({ query: { name: 'Test' } }, mockContext);
+      const result = await tool.handler({ name: 'Test' }, mockContext);
 
       expect(mockWorkflows.list).toHaveBeenCalledWith({ name: 'Test' });
       expect(result.workflows).toEqual(mockResult.data);
@@ -139,7 +139,7 @@ describe('Workflow Tools', () => {
       await registerWorkflowTools(registry);
       const tool = registry.getToolDefinition('listWorkflows')!;
 
-      const result = await tool.handler({ query: { tag: 'important' } }, mockContext);
+      const result = await tool.handler({ tag: 'important' }, mockContext);
 
       expect(mockWorkflows.list).toHaveBeenCalledWith({ tag: 'important' });
       expect(result.workflows).toEqual(mockResult.data);
@@ -158,7 +158,7 @@ describe('Workflow Tools', () => {
       await registerWorkflowTools(registry);
       const tool = registry.getToolDefinition('listWorkflows')!;
 
-      const result = await tool.handler({ query: { tag: ['important', 'prod'] } }, mockContext);
+      const result = await tool.handler({ tag: ['important', 'prod'] }, mockContext);
 
       expect(mockWorkflows.list).toHaveBeenCalledWith({ tag: ['important', 'prod'] });
       expect(result.workflows).toEqual(mockResult.data);
@@ -177,7 +177,7 @@ describe('Workflow Tools', () => {
       await registerWorkflowTools(registry);
       const tool = registry.getToolDefinition('listWorkflows')!;
 
-      const result = await tool.handler({ query: { projectId: 'proj-123' } }, mockContext);
+      const result = await tool.handler({ projectId: 'proj-123' }, mockContext);
 
       expect(mockWorkflows.list).toHaveBeenCalledWith({ projectId: 'proj-123' });
       expect(result.workflows).toEqual(mockResult.data);
@@ -198,11 +198,9 @@ describe('Workflow Tools', () => {
 
       const result = await tool.handler(
         {
-          query: {
-            active: true,
-            name: 'Filtered',
-            projectId: 'proj-123',
-          },
+          active: true,
+          name: 'Filtered',
+          projectId: 'proj-123',
         },
         mockContext
       );
@@ -230,11 +228,9 @@ describe('Workflow Tools', () => {
 
       const result = await tool.handler(
         {
-          query: {
-            active: true,
-            limit: 5,
-            cursor: 'start-cursor',
-          },
+          active: true,
+          limit: 5,
+          cursor: 'start-cursor',
         },
         mockContext
       );

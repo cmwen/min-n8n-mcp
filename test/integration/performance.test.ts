@@ -35,7 +35,7 @@ describe('Performance Tests', () => {
 
       const startTime = Date.now();
 
-      await tool.handler({ query: { limit: 10 } }, mcpServer.context);
+      await tool.handler({ limit: 10 }, mcpServer.context);
 
       const duration = Date.now() - startTime;
 
@@ -54,7 +54,7 @@ describe('Performance Tests', () => {
       // Execute 10 concurrent requests
       const promises = Array(10)
         .fill(null)
-        .map(() => tool.handler({ query: { limit: 5 } }, mcpServer.context));
+        .map(() => tool.handler({ limit: 5 }, mcpServer.context));
 
       await Promise.all(promises);
 
@@ -76,7 +76,7 @@ describe('Performance Tests', () => {
 
       // Execute many operations
       for (let i = 0; i < 50; i++) {
-        await tool.handler({ query: { limit: 1 } }, mcpServer.context);
+        await tool.handler({ limit: 1 }, mcpServer.context);
       }
 
       // Force garbage collection if available

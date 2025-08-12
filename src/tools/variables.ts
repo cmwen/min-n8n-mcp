@@ -29,7 +29,7 @@ export async function registerVariableTools(registry: ToolRegistry): Promise<voi
       'listVariables',
       'List all environment variables available in the system',
       async (input: ToolInputs['listVariables'], context) => {
-        const result = await context.resources.variables.list(input.query || {});
+        const result = await context.resources.variables.list(input);
 
         context.logger.info(
           {

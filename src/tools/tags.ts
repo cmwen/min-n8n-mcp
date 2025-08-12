@@ -28,7 +28,7 @@ export async function registerTagTools(registry: ToolRegistry): Promise<void> {
       'listTags',
       'List all available tags in the system',
       async (input: ToolInputs['listTags'], context) => {
-        const result = await context.resources.tags.list(input.query || {});
+        const result = await context.resources.tags.list(input);
 
         context.logger.info(
           {

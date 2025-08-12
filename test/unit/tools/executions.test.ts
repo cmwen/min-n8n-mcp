@@ -47,12 +47,7 @@ describe('Execution Tools', () => {
       await registerExecutionTools(registry);
       const tool = registry.getToolDefinition('listExecutions')!;
 
-      const result = await tool.handler(
-        {
-          query: { status: 'success', limit: 10 },
-        },
-        mockContext
-      );
+      const result = await tool.handler({ status: 'success', limit: 10 }, mockContext);
 
       expect(mockExecutions.list).toHaveBeenCalledWith({ status: 'success', limit: 10 });
       expect(result).toEqual({
@@ -78,7 +73,7 @@ describe('Execution Tools', () => {
       await registerExecutionTools(registry);
       const tool = registry.getToolDefinition('listExecutions')!;
 
-      const result = await tool.handler({ query: {} }, mockContext);
+      const result = await tool.handler({}, mockContext);
 
       expect(mockExecutions.list).toHaveBeenCalledWith({});
       expect(result.executions).toEqual([]);

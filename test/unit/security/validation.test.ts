@@ -6,11 +6,9 @@ describe('Security and Validation', () => {
   describe('Input Validation', () => {
     it('should validate listWorkflows input', () => {
       const validInput = {
-        query: {
-          active: true,
-          limit: 10,
-          name: 'test-workflow',
-        },
+        active: true,
+        limit: 10,
+        name: 'test-workflow',
       };
 
       const result = validateToolInput('listWorkflows', validInput);
@@ -19,9 +17,7 @@ describe('Security and Validation', () => {
 
     it('should reject invalid limit values', () => {
       const invalidInput = {
-        query: {
-          limit: -1, // Invalid: negative
-        },
+        limit: -1, // Invalid: negative
       };
 
       expect(() => validateToolInput('listWorkflows', invalidInput)).toThrow();
@@ -29,9 +25,7 @@ describe('Security and Validation', () => {
 
     it('should reject limit values that are too large', () => {
       const invalidInput = {
-        query: {
-          limit: 1000, // Invalid: exceeds max of 200
-        },
+        limit: 1000, // Invalid: exceeds max of 200
       };
 
       expect(() => validateToolInput('listWorkflows', invalidInput)).toThrow();

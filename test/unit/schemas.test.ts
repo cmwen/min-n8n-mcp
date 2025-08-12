@@ -9,10 +9,8 @@ describe('Schema Validation', () => {
   it('should validate correct tool inputs', () => {
     // Test listWorkflows
     const listWorkflowsInput = {
-      query: {
-        limit: 10,
-        active: true,
-      },
+      limit: 10,
+      active: true,
     };
 
     const result = validateToolInput('listWorkflows', listWorkflowsInput);

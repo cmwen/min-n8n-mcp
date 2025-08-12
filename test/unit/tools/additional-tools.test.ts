@@ -60,7 +60,7 @@ describe('Additional Tool Tests', () => {
       await registerUserTools(registry);
       const tool = registry.getToolDefinition('listUsers')!;
 
-      const result = await tool.handler({ query: { limit: 10 } }, mockContext);
+      const result = await tool.handler({ limit: 10 }, mockContext);
 
       expect(mockUsers.list).toHaveBeenCalledWith({ limit: 10 });
       expect(result).toEqual({
@@ -130,7 +130,7 @@ describe('Additional Tool Tests', () => {
       await registerTagTools(registry);
       const tool = registry.getToolDefinition('listTags')!;
 
-      const result = await tool.handler({ query: { limit: 10 } }, mockContext);
+      const result = await tool.handler({ limit: 10 }, mockContext);
 
       expect(mockTags.list).toHaveBeenCalledWith({ limit: 10 });
       expect(result).toEqual({
