@@ -14,6 +14,7 @@ describe('End-to-End Integration', () => {
     concurrency: 2,
     httpMode: false,
     httpPort: 3000,
+    mode: 'advanced',
   };
 
   describe('Server Creation', () => {

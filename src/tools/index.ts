@@ -11,33 +11,152 @@ import { registerVariableTools } from './variables.js';
 // Import all tool modules (to be implemented in later stages)
 import { registerWorkflowTools } from './workflows.js';
 
-export async function registerAllTools(registry: ToolRegistry): Promise<void> {
+type Mode = 'basic' | 'intermediate' | 'advanced';
+
+// Define which tools are available in each mode
+const MODE_TOOLS = {
+  basic: {
+    workflows: [
+      'listWorkflows',
+      'getWorkflow',
+      'runWorkflow',
+      'activateWorkflow',
+      'deactivateWorkflow',
+    ],
+    executions: ['listExecutions', 'getExecution'],
+    credentials: [],
+    tags: [],
+    users: [],
+    variables: [],
+    projects: [],
+    audit: [],
+    sourceControl: [],
+  },
+  intermediate: {
+    workflows: [
+      'listWorkflows',
+      'getWorkflow',
+      'runWorkflow',
+      'activateWorkflow',
+      'deactivateWorkflow',
+      'createWorkflow',
+      'updateWorkflow',
+      'deleteWorkflow',
+      'getWorkflowTags',
+      'updateWorkflowTags',
+    ],
+    executions: ['listExecutions', 'getExecution', 'deleteExecution'],
+    credentials: ['createCredential', 'deleteCredential', 'getCredentialType'],
+    tags: ['listTags', 'createTag', 'getTag', 'updateTag', 'deleteTag'],
+    users: [],
+    variables: [],
+    projects: [],
+    audit: [],
+    sourceControl: [],
+  },
+  advanced: {
+    // All tools - no filtering applied
+    workflows: [],
+    executions: [],
+    credentials: [],
+    tags: [],
+    users: [],
+    variables: [],
+    projects: [],
+    audit: [],
+    sourceControl: [],
+  },
+} as const;
+
+export async function registerAllTools(
+  registry: ToolRegistry,
+  mode: Mode = 'advanced'
+): Promise<void> {
+  // Create a registry wrapper that filters tools based on mode
+  const modeAwareRegistry =
+    mode === 'advanced' ? registry : createModeAwareRegistry(registry, mode);
+
   // Register workflow tools
-  await registerWorkflowTools(registry);
+  await registerWorkflowTools(modeAwareRegistry);
 
   // Register execution tools
-  await registerExecutionTools(registry);
+  await registerExecutionTools(modeAwareRegistry);
 
-  // Register credential tools
-  await registerCredentialTools(registry);
+  // Register credential tools (only for intermediate+ modes)
+  if (mode !== 'basic') {
+    await registerCredentialTools(modeAwareRegistry);
+  }
 
-  // Register tag tools
-  await registerTagTools(registry);
+  // Register tag tools (only for intermediate+ modes)
+  if (mode !== 'basic') {
+    await registerTagTools(modeAwareRegistry);
+  }
 
-  // Register user tools
-  await registerUserTools(registry);
+  // Register user tools (only for advanced mode)
+  if (mode === 'advanced') {
+    await registerUserTools(modeAwareRegistry);
+  }
 
-  // Register variable tools
-  await registerVariableTools(registry);
+  // Register variable tools (only for advanced mode)
+  if (mode === 'advanced') {
+    await registerVariableTools(modeAwareRegistry);
+  }
 
-  // Register project tools
-  await registerProjectTools(registry);
+  // Register project tools (only for advanced mode)
+  if (mode === 'advanced') {
+    await registerProjectTools(modeAwareRegistry);
+  }
 
-  // Register audit tools
-  await registerAuditTools(registry);
+  // Register audit tools (only for advanced mode)
+  if (mode === 'advanced') {
+    await registerAuditTools(modeAwareRegistry);
+  }
 
-  // Register source control tools
-  await registerSourceControlTools(registry);
+  // Register source control tools (only for advanced mode)
+  if (mode === 'advanced') {
+    await registerSourceControlTools(modeAwareRegistry);
+  }
+}
+
+function createModeAwareRegistry(registry: ToolRegistry, mode: Mode): ToolRegistry {
+  const proxy = Object.create(registry);
+  
+  proxy.register = (tool: any) => {
+    const category = getToolCategory(tool.name);
+    if (category && MODE_TOOLS[mode][category].length > 0) {
+      // Check if this specific tool is allowed in the current mode
+      if ((MODE_TOOLS[mode][category] as readonly string[]).includes(tool.name)) {
+        registry.register(tool);
+      }
+    }
+  };
+  
+  proxy.registerBatch = (tools: any[]) => {
+    for (const tool of tools) {
+      const category = getToolCategory(tool.name);
+      if (category && MODE_TOOLS[mode][category].length > 0) {
+        if ((MODE_TOOLS[mode][category] as readonly string[]).includes(tool.name)) {
+          registry.register(tool);
+        }
+      }
+    }
+  };
+  
+  return proxy;
+}
+
+function getToolCategory(toolName: string): keyof typeof MODE_TOOLS.basic | null {
+  if (toolName.includes('Workflow') || toolName.includes('workflow')) return 'workflows';
+  if (toolName.includes('Execution') || toolName.includes('execution')) return 'executions';
+  if (toolName.includes('Credential') || toolName.includes('credential')) return 'credentials';
+  if (toolName.includes('Tag') || toolName.includes('tag')) return 'tags';
+  if (toolName.includes('User') || toolName.includes('user')) return 'users';
+  if (toolName.includes('Variable') || toolName.includes('variable')) return 'variables';
+  if (toolName.includes('Project') || toolName.includes('project')) return 'projects';
+  if (toolName.includes('Audit') || toolName.includes('audit')) return 'audit';
+  if (toolName.includes('SourceControl') || toolName.includes('sourceControl'))
+    return 'sourceControl';
+  return null;
 }
 
 // Export all tool types for external use
