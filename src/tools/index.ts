@@ -70,7 +70,7 @@ const MODE_TOOLS = {
 
 export async function registerAllTools(
   registry: ToolRegistry,
-  mode: Mode = 'advanced'
+  mode: Mode = 'intermediate'
 ): Promise<void> {
   // Create a registry wrapper that filters tools based on mode
   const modeAwareRegistry =

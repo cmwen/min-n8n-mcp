@@ -9,7 +9,7 @@ const ConfigSchema = z.object({
   concurrency: z.number().int().positive().default(4),
   httpMode: z.boolean().default(false),
   httpPort: z.number().int().min(1).max(65535).default(3000),
-  mode: z.enum(['basic', 'intermediate', 'advanced']).default('advanced'),
+  mode: z.enum(['basic', 'intermediate', 'advanced']).default('intermediate'),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;

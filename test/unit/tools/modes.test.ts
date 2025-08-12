@@ -216,15 +216,22 @@ describe('Multiple Modes Feature', () => {
   });
 
   describe('Default Mode Behavior', () => {
-    it('should default to advanced mode when no mode specified', async () => {
+    it('should default to intermediate mode when no mode specified', async () => {
       await registerAllTools(registry); // No mode specified
       const toolNames = registry.getToolNames();
 
-      // Should behave like advanced mode
+      // Should behave like intermediate mode
       expect(toolNames).toContain('listWorkflows');
       expect(toolNames).toContain('createWorkflow');
-      expect(toolNames).toContain('listUsers');
-      expect(toolNames.length).toBeGreaterThan(10);
+      expect(toolNames).toContain('deleteWorkflow');
+      expect(toolNames).toContain('listTags');
+
+      // Should NOT contain advanced-only tools
+      expect(toolNames).not.toContain('listUsers');
+
+      // Should have more tools than basic but less than advanced
+      expect(toolNames.length).toBeGreaterThan(8);
+      expect(toolNames.length).toBeLessThan(25);
     });
   });
 

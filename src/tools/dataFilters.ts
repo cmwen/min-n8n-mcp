@@ -96,5 +96,5 @@ export function filterExecutionList(executions: any[], mode: Mode): any[] {
  * Get mode from context configuration
  */
 export function getModeFromContext(context: any): Mode {
-  return context.config?.mode || 'advanced';
+  return context.config?.mode || 'intermediate';
 }

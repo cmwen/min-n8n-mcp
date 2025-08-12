@@ -179,14 +179,14 @@ describe('Data Filters', () => {
       expect(getModeFromContext(context)).toBe('basic');
     });
 
-    it('should default to advanced when no mode in context', () => {
+    it('should default to intermediate when no mode in context', () => {
       const context = { config: {} };
-      expect(getModeFromContext(context)).toBe('advanced');
+      expect(getModeFromContext(context)).toBe('intermediate');
     });
 
-    it('should default to advanced when no config in context', () => {
+    it('should default to intermediate when no config in context', () => {
       const context = {};
-      expect(getModeFromContext(context)).toBe('advanced');
+      expect(getModeFromContext(context)).toBe('intermediate');
     });
   });
 
