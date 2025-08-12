@@ -30,6 +30,7 @@ describe('MCP Server Integration', () => {
     concurrency: 2,
     httpMode: true,
     httpPort: 3002,
+    mode: 'advanced',
   };
 
   afterEach(async () => {

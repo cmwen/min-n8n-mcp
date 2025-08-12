@@ -1,4 +1,5 @@
 import type { ToolInputs } from '../schemas/index.js';
+import { filterExecutionData, filterExecutionList, getModeFromContext } from './dataFilters.js';
 import type { ToolRegistry } from './registry.js';
 import { createTool } from './registry.js';
 
@@ -9,18 +10,20 @@ export async function registerExecutionTools(registry: ToolRegistry): Promise<vo
       'List workflow executions with optional filtering by workflow, status, and data inclusion',
       async (input: ToolInputs['listExecutions'], context) => {
         const result = await context.resources.executions.list(input);
+        const mode = getModeFromContext(context);
 
         context.logger.info(
           {
             totalFetched: result.totalFetched,
             pagesFetched: result.pagesFetched,
             filters: input,
+            mode,
           },
           'Listed executions'
         );
 
         return {
-          executions: result.data,
+          executions: filterExecutionList(result.data, mode),
           pagination: {
             totalFetched: result.totalFetched,
             pagesFetched: result.pagesFetched,
@@ -39,17 +42,19 @@ export async function registerExecutionTools(registry: ToolRegistry): Promise<vo
         const execution = await context.resources.executions.get(input.id, {
           includeData: input.includeData,
         });
+        const mode = getModeFromContext(context);
 
         context.logger.info(
           {
             executionId: input.id,
             includeData: input.includeData,
             status: execution.status,
+            mode,
           },
           'Retrieved execution'
         );
 
-        return execution;
+        return filterExecutionData(execution, mode);
       }
     )
   );

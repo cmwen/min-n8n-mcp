@@ -21,7 +21,7 @@ describe('Execution Tools', () => {
     };
 
     mockContext = {
-      config: {} as any,
+      config: { mode: 'advanced' } as any,
       logger: createLogger('error'),
       httpClient: {} as any,
       resources: {

@@ -20,6 +20,7 @@ describe('Performance Tests', () => {
       concurrency: 4,
       httpMode: false,
       httpPort: 3000,
+      mode: 'advanced',
     };
 
     const logger = createLogger('error');

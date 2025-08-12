@@ -21,6 +21,7 @@ program
   .option('--concurrency <n>', 'Max concurrent requests', '4')
   .option('--http', 'Enable HTTP mode instead of STDIO')
   .option('--http-port <port>', 'HTTP server port', '3000')
+  .option('--mode <mode>', 'Tool exposure mode (basic|intermediate|advanced)', 'intermediate')
   .option('--print-config', 'Print configuration and exit')
   .action(async (options) => {
     try {

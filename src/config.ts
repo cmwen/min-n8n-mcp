@@ -9,6 +9,7 @@ const ConfigSchema = z.object({
   concurrency: z.number().int().positive().default(4),
   httpMode: z.boolean().default(false),
   httpPort: z.number().int().min(1).max(65535).default(3000),
+  mode: z.enum(['basic', 'intermediate', 'advanced']).default('intermediate'),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;
@@ -30,6 +31,7 @@ export function loadConfig(cliOptions: Record<string, any> = {}): Config {
     httpPort: process.env.MCP_HTTP_PORT
       ? Number.parseInt(process.env.MCP_HTTP_PORT, 10)
       : undefined,
+    mode: process.env.MCP_MODE,
   };
 
   // CLI options override environment variables
@@ -44,6 +46,7 @@ export function loadConfig(cliOptions: Record<string, any> = {}): Config {
       : env.concurrency,
     httpMode: cliOptions.http || env.httpMode,
     httpPort: cliOptions.httpPort ? Number.parseInt(cliOptions.httpPort, 10) : env.httpPort,
+    mode: cliOptions.mode || env.mode,
   };
 
   // Normalize n8n URL - append /api/v1 if it's just the server root

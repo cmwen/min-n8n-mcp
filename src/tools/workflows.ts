@@ -1,4 +1,5 @@
 import type { ToolInputs } from '../schemas/index.js';
+import { filterWorkflowData, filterWorkflowList, getModeFromContext } from './dataFilters.js';
 import type { ToolRegistry } from './registry.js';
 import { createTool } from './registry.js';
 
@@ -9,18 +10,20 @@ export async function registerWorkflowTools(registry: ToolRegistry): Promise<voi
       'List n8n workflows with optional filtering by active status, name, tags, or project',
       async (input: ToolInputs['listWorkflows'], context) => {
         const result = await context.resources.workflows.list(input);
+        const mode = getModeFromContext(context);
 
         context.logger.info(
           {
             totalFetched: result.totalFetched,
             pagesFetched: result.pagesFetched,
             hasMore: !!result.nextCursor,
+            mode,
           },
           'Listed workflows'
         );
 
         return {
-          workflows: result.data,
+          workflows: filterWorkflowList(result.data, mode),
           pagination: {
             totalFetched: result.totalFetched,
             pagesFetched: result.pagesFetched,
@@ -39,10 +42,11 @@ export async function registerWorkflowTools(registry: ToolRegistry): Promise<voi
         const workflow = await context.resources.workflows.get(input.id, {
           excludePinnedData: input.excludePinnedData,
         });
+        const mode = getModeFromContext(context);
 
-        context.logger.info({ workflowId: input.id }, 'Retrieved workflow');
+        context.logger.info({ workflowId: input.id, mode }, 'Retrieved workflow');
 
-        return workflow;
+        return filterWorkflowData(workflow, mode);
       }
     )
   );

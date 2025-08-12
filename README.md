@@ -69,6 +69,40 @@ npx min-n8n-mcp --http --http-port 3000
 - **Protocol**: HTTP endpoint (localhost:port)
 - **Best For**: Testing, visual debugging with MCP Inspector
 
+## Operating Modes
+
+The MCP server offers three operating modes to balance functionality with performance, reducing LLM confusion and data verbosity:
+
+### Intermediate Mode (Default)
+- **Tools**: 15+ essential tools covering workflow management, executions, credentials, and tags
+- **Data Filtering**: Returns streamlined data with metadata but excludes verbose node/connection definitions
+- **Best For**: Most use cases requiring workflow automation with manageable tool count
+
+### Basic Mode
+- **Tools**: 7 essential tools for simple workflow operations (list, get, run, activate/deactivate)
+- **Data Filtering**: Returns only essential fields (ID, name, status, tags) reducing payload by ~50%
+- **Best For**: Simple workflow management with minimal tool exposure
+
+### Advanced Mode
+- **Tools**: Complete API access with 30+ tools covering all n8n operations
+- **Data Filtering**: No filtering - returns complete data unchanged
+- **Best For**: Complex automation requiring full n8n API capabilities
+
+### Usage Examples
+
+```bash
+# Use default intermediate mode
+npx min-n8n-mcp
+
+# Specify mode explicitly
+npx min-n8n-mcp --mode basic
+npx min-n8n-mcp --mode intermediate
+npx min-n8n-mcp --mode advanced
+
+# Via environment variable
+MCP_MODE=basic npx min-n8n-mcp
+```
+
 ## Available Tools
 
 The MCP server exposes comprehensive n8n management capabilities through the following tool categories:
@@ -134,6 +168,7 @@ The MCP server exposes comprehensive n8n management capabilities through the fol
 |----------|-------------|---------|----------|
 | `N8N_API_URL` | n8n instance URL | - | ✅ |
 | `N8N_API_TOKEN` | n8n API token | - | ✅ |
+| `MCP_MODE` | Operating mode (basic\|intermediate\|advanced) | `intermediate` | ❌ |
 | `LOG_LEVEL` | Logging level | `info` | ❌ |
 | `HTTP_TIMEOUT_MS` | Request timeout | `30000` | ❌ |
 | `HTTP_RETRIES` | Retry attempts | `2` | ❌ |
@@ -145,6 +180,7 @@ The MCP server exposes comprehensive n8n management capabilities through the fol
 Options:
   --url <string>           n8n API URL (overrides N8N_API_URL)
   --token <string>         n8n API token (overrides N8N_API_TOKEN)
+  --mode <mode>            Tool exposure mode (basic|intermediate|advanced, default: intermediate)
   --http                   Enable HTTP mode
   --http-port <number>     HTTP mode port (default: 3000)
   --log-level <level>      Log level (debug|info|warn|error)

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Default Mode Changed**: Changed default operating mode from 'advanced' to 'intermediate'
+  - Provides a better balance of functionality vs. simplicity for most use cases
+  - Intermediate mode includes workflow management, executions, credentials, and tags (~15 tools)
+  - Advanced mode remains available for full API access
+  - Basic mode available for minimal tool exposure (7 tools)
+
 ### Fixed
 - **Critical MCP Tool Validation Fix**: Fixed `keyValidator._parse is not a function` error in MCP tool registration
   - Changed `inputSchema` parameter from JSON schemas to Zod raw shapes using `.shape` property

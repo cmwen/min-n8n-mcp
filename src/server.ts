@@ -64,12 +64,13 @@ export async function createServer(config: Config, logger: Logger): Promise<MinN
 
   // Create tool registry and register all tools
   const registry = new ToolRegistry();
-  await registerAllTools(registry);
+  await registerAllTools(registry, config.mode);
   await registry.setupMcpHandlers(server, context);
 
   logger.info(
     {
       mode: config.httpMode ? 'HTTP' : 'STDIO',
+      toolMode: config.mode,
       url: config.n8nApiUrl,
       port: config.httpMode ? config.httpPort : undefined,
       toolCount: registry.getToolNames().length,
