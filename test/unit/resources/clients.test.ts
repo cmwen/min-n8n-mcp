@@ -46,6 +46,115 @@ describe('Resource Clients', () => {
       expect(result.totalFetched).toBe(2);
     });
 
+    it('should list workflows with active filter', async () => {
+      const mockResponse = {
+        data: [{ id: '1', name: 'Active Workflow', active: true }],
+        count: 1,
+      };
+
+      mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+
+      const result = await clients.workflows.list({ active: true, limit: 10 });
+
+      expect(mockHttpClient.get).toHaveBeenCalledWith('/workflows', {
+        active: true,
+        limit: 10,
+      });
+      expect(result.data).toEqual(mockResponse.data);
+    });
+
+    it('should list workflows with name filter', async () => {
+      const mockResponse = {
+        data: [{ id: '1', name: 'Test Workflow', active: true }],
+        count: 1,
+      };
+
+      mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+
+      const result = await clients.workflows.list({ name: 'Test', limit: 10 });
+
+      expect(mockHttpClient.get).toHaveBeenCalledWith('/workflows', {
+        name: 'Test',
+        limit: 10,
+      });
+      expect(result.data).toEqual(mockResponse.data);
+    });
+
+    it('should list workflows with tag filter (string)', async () => {
+      const mockResponse = {
+        data: [{ id: '1', name: 'Tagged Workflow', tags: ['important'] }],
+        count: 1,
+      };
+
+      mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+
+      const result = await clients.workflows.list({ tag: 'important', limit: 10 });
+
+      expect(mockHttpClient.get).toHaveBeenCalledWith('/workflows', {
+        tag: 'important',
+        limit: 10,
+      });
+      expect(result.data).toEqual(mockResponse.data);
+    });
+
+    it('should list workflows with tag filter (array)', async () => {
+      const mockResponse = {
+        data: [{ id: '1', name: 'Multi-tagged Workflow', tags: ['important', 'prod'] }],
+        count: 1,
+      };
+
+      mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+
+      const result = await clients.workflows.list({ tag: ['important', 'prod'], limit: 10 });
+
+      expect(mockHttpClient.get).toHaveBeenCalledWith('/workflows', {
+        tag: 'important,prod', // Should be joined as comma-separated string
+        limit: 10,
+      });
+      expect(result.data).toEqual(mockResponse.data);
+    });
+
+    it('should list workflows with projectId filter', async () => {
+      const mockResponse = {
+        data: [{ id: '1', name: 'Project Workflow', projectId: 'proj-123' }],
+        count: 1,
+      };
+
+      mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+
+      const result = await clients.workflows.list({ projectId: 'proj-123', limit: 10 });
+
+      expect(mockHttpClient.get).toHaveBeenCalledWith('/workflows', {
+        projectId: 'proj-123',
+        limit: 10,
+      });
+      expect(result.data).toEqual(mockResponse.data);
+    });
+
+    it('should list workflows with multiple filters', async () => {
+      const mockResponse = {
+        data: [{ id: '1', name: 'Filtered Workflow', active: true, projectId: 'proj-123' }],
+        count: 1,
+      };
+
+      mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+
+      const result = await clients.workflows.list({
+        active: true,
+        name: 'Filtered',
+        projectId: 'proj-123',
+        limit: 5,
+      });
+
+      expect(mockHttpClient.get).toHaveBeenCalledWith('/workflows', {
+        active: true,
+        name: 'Filtered',
+        projectId: 'proj-123',
+        limit: 5,
+      });
+      expect(result.data).toEqual(mockResponse.data);
+    });
+
     it('should get workflow by ID', async () => {
       const mockWorkflow = { id: '1', name: 'Test Workflow', active: true };
       mockHttpClient.get.mockResolvedValueOnce(mockWorkflow);

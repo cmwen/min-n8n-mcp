@@ -100,9 +100,7 @@ export const CredentialCreateSchema = z.object({
 // Tool input schemas
 export const ToolInputSchemas = {
   // Workflow tools
-  listWorkflows: z.object({
-    query: WorkflowQuerySchema.optional(),
-  }),
+  listWorkflows: WorkflowQuerySchema.partial(),
   getWorkflow: z.object({
     id: IdSchema,
     excludePinnedData: z.boolean().optional(),
@@ -143,9 +141,7 @@ export const ToolInputSchemas = {
   }),
 
   // Execution tools
-  listExecutions: z.object({
-    query: ExecutionQuerySchema.optional(),
-  }),
+  listExecutions: ExecutionQuerySchema.partial(),
   getExecution: z.object({
     id: IdSchema,
     includeData: z.boolean().optional(),
@@ -173,9 +169,7 @@ export const ToolInputSchemas = {
   createTag: z.object({
     data: TagCreateSchema,
   }),
-  listTags: z.object({
-    query: PaginationQuerySchema.optional(),
-  }),
+  listTags: PaginationQuerySchema.partial(),
   getTag: z.object({
     id: IdSchema,
   }),
@@ -188,9 +182,7 @@ export const ToolInputSchemas = {
   }),
 
   // User tools
-  listUsers: z.object({
-    query: UserQuerySchema.optional(),
-  }),
+  listUsers: UserQuerySchema.partial(),
   createUser: z.object({
     data: UserCreateSchema,
   }),
@@ -210,9 +202,7 @@ export const ToolInputSchemas = {
   createVariable: z.object({
     data: VariableCreateSchema,
   }),
-  listVariables: z.object({
-    query: PaginationQuerySchema.optional(),
-  }),
+  listVariables: PaginationQuerySchema.partial(),
   updateVariable: z.object({
     id: IdSchema,
     data: VariableUpdateSchema,
@@ -225,9 +215,7 @@ export const ToolInputSchemas = {
   createProject: z.object({
     data: ProjectCreateSchema,
   }),
-  listProjects: z.object({
-    query: PaginationQuerySchema.optional(),
-  }),
+  listProjects: PaginationQuerySchema.partial(),
   updateProject: z.object({
     id: IdSchema,
     data: ProjectUpdateSchema,

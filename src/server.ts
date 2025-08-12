@@ -33,11 +33,10 @@ export async function createServer(config: Config, logger: Logger): Promise<MinN
     await httpClient.get('/workflows', { limit: 1 });
     logger.info('Successfully connected to n8n API');
   } catch (error) {
-    logger.warn('Failed to connect to n8n API, continuing anyway for testing', error);
-    // Commenting out the throw for testing purposes
-    // throw new Error(
-    //   `Cannot connect to n8n API at ${config.n8nApiUrl}. Please verify the URL and API token.`
-    // );
+    logger.error('Failed to connect to n8n API', error);
+    throw new Error(
+      `Cannot connect to n8n API at ${config.n8nApiUrl}. Please verify the URL and API token.`
+    );
   }
 
   // Create resource clients
@@ -113,7 +112,7 @@ export function startHttpServer(mcpServer: MinN8nMcpServer): any {
   // Enable CORS for browser-based clients
   app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, mcp-session-id');
     res.setHeader('Access-Control-Expose-Headers', 'Mcp-Session-Id');
     if (req.method === 'OPTIONS') {
@@ -183,6 +182,11 @@ export function startHttpServer(mcpServer: MinN8nMcpServer): any {
       return;
     }
     await transports[sessionId].handleRequest(req, res);
+  });
+
+  // 404 handler - return JSON instead of HTML
+  app.use((req, res) => {
+    res.status(404).json({ error: 'Not found' });
   });
 
   const httpServer = app.listen(config.httpPort, () => {

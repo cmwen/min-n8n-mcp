@@ -8,12 +8,12 @@ export async function registerUserTools(registry: ToolRegistry): Promise<void> {
       'listUsers',
       'List all users in the n8n instance with optional role information',
       async (input: ToolInputs['listUsers'], context) => {
-        const result = await context.resources.users.list(input.query || {});
+        const result = await context.resources.users.list(input);
 
         context.logger.info(
           {
             totalFetched: result.totalFetched,
-            includeRole: input.query?.includeRole,
+            includeRole: input.includeRole,
           },
           'Listed users'
         );

@@ -8,7 +8,7 @@ export async function registerWorkflowTools(registry: ToolRegistry): Promise<voi
       'listWorkflows',
       'List n8n workflows with optional filtering by active status, name, tags, or project',
       async (input: ToolInputs['listWorkflows'], context) => {
-        const result = await context.resources.workflows.list(input.query || {});
+        const result = await context.resources.workflows.list(input);
 
         context.logger.info(
           {

@@ -8,13 +8,13 @@ export async function registerExecutionTools(registry: ToolRegistry): Promise<vo
       'listExecutions',
       'List workflow executions with optional filtering by workflow, status, and data inclusion',
       async (input: ToolInputs['listExecutions'], context) => {
-        const result = await context.resources.executions.list(input.query || {});
+        const result = await context.resources.executions.list(input);
 
         context.logger.info(
           {
             totalFetched: result.totalFetched,
             pagesFetched: result.pagesFetched,
-            filters: input.query,
+            filters: input,
           },
           'Listed executions'
         );

@@ -56,7 +56,7 @@ describe('Workflow Tools', () => {
       await registerWorkflowTools(registry);
       const tool = registry.getToolDefinition('listWorkflows')!;
 
-      const result = await tool.handler({ query: { limit: 10 } }, mockContext);
+      const result = await tool.handler({ limit: 10 }, mockContext);
 
       expect(mockWorkflows.list).toHaveBeenCalledWith({ limit: 10 });
       expect(result).toEqual({
@@ -82,10 +82,166 @@ describe('Workflow Tools', () => {
       await registerWorkflowTools(registry);
       const tool = registry.getToolDefinition('listWorkflows')!;
 
-      const result = await tool.handler({ query: {} }, mockContext);
+      const result = await tool.handler({}, mockContext);
 
       expect(mockWorkflows.list).toHaveBeenCalledWith({});
       expect(result.workflows).toEqual([]);
+    });
+
+    it('should filter workflows by active status', async () => {
+      const mockResult = {
+        data: [{ id: '1', name: 'Active Workflow', active: true }],
+        totalFetched: 1,
+        pagesFetched: 1,
+        nextCursor: undefined,
+      };
+
+      mockWorkflows.list.mockResolvedValueOnce(mockResult);
+
+      await registerWorkflowTools(registry);
+      const tool = registry.getToolDefinition('listWorkflows')!;
+
+      const result = await tool.handler({ active: true }, mockContext);
+
+      expect(mockWorkflows.list).toHaveBeenCalledWith({ active: true });
+      expect(result.workflows).toEqual(mockResult.data);
+    });
+
+    it('should filter workflows by name', async () => {
+      const mockResult = {
+        data: [{ id: '1', name: 'Test Workflow', active: true }],
+        totalFetched: 1,
+        pagesFetched: 1,
+        nextCursor: undefined,
+      };
+
+      mockWorkflows.list.mockResolvedValueOnce(mockResult);
+
+      await registerWorkflowTools(registry);
+      const tool = registry.getToolDefinition('listWorkflows')!;
+
+      const result = await tool.handler({ name: 'Test' }, mockContext);
+
+      expect(mockWorkflows.list).toHaveBeenCalledWith({ name: 'Test' });
+      expect(result.workflows).toEqual(mockResult.data);
+    });
+
+    it('should filter workflows by single tag', async () => {
+      const mockResult = {
+        data: [{ id: '1', name: 'Tagged Workflow', tags: ['important'] }],
+        totalFetched: 1,
+        pagesFetched: 1,
+        nextCursor: undefined,
+      };
+
+      mockWorkflows.list.mockResolvedValueOnce(mockResult);
+
+      await registerWorkflowTools(registry);
+      const tool = registry.getToolDefinition('listWorkflows')!;
+
+      const result = await tool.handler({ tag: 'important' }, mockContext);
+
+      expect(mockWorkflows.list).toHaveBeenCalledWith({ tag: 'important' });
+      expect(result.workflows).toEqual(mockResult.data);
+    });
+
+    it('should filter workflows by multiple tags', async () => {
+      const mockResult = {
+        data: [{ id: '1', name: 'Multi-tagged Workflow', tags: ['important', 'prod'] }],
+        totalFetched: 1,
+        pagesFetched: 1,
+        nextCursor: undefined,
+      };
+
+      mockWorkflows.list.mockResolvedValueOnce(mockResult);
+
+      await registerWorkflowTools(registry);
+      const tool = registry.getToolDefinition('listWorkflows')!;
+
+      const result = await tool.handler({ tag: ['important', 'prod'] }, mockContext);
+
+      expect(mockWorkflows.list).toHaveBeenCalledWith({ tag: ['important', 'prod'] });
+      expect(result.workflows).toEqual(mockResult.data);
+    });
+
+    it('should filter workflows by projectId', async () => {
+      const mockResult = {
+        data: [{ id: '1', name: 'Project Workflow', projectId: 'proj-123' }],
+        totalFetched: 1,
+        pagesFetched: 1,
+        nextCursor: undefined,
+      };
+
+      mockWorkflows.list.mockResolvedValueOnce(mockResult);
+
+      await registerWorkflowTools(registry);
+      const tool = registry.getToolDefinition('listWorkflows')!;
+
+      const result = await tool.handler({ projectId: 'proj-123' }, mockContext);
+
+      expect(mockWorkflows.list).toHaveBeenCalledWith({ projectId: 'proj-123' });
+      expect(result.workflows).toEqual(mockResult.data);
+    });
+
+    it('should combine multiple filters', async () => {
+      const mockResult = {
+        data: [{ id: '1', name: 'Filtered Workflow', active: true, projectId: 'proj-123' }],
+        totalFetched: 1,
+        pagesFetched: 1,
+        nextCursor: undefined,
+      };
+
+      mockWorkflows.list.mockResolvedValueOnce(mockResult);
+
+      await registerWorkflowTools(registry);
+      const tool = registry.getToolDefinition('listWorkflows')!;
+
+      const result = await tool.handler(
+        {
+          active: true,
+          name: 'Filtered',
+          projectId: 'proj-123',
+        },
+        mockContext
+      );
+
+      expect(mockWorkflows.list).toHaveBeenCalledWith({
+        active: true,
+        name: 'Filtered',
+        projectId: 'proj-123',
+      });
+      expect(result.workflows).toEqual(mockResult.data);
+    });
+
+    it('should combine filters with pagination', async () => {
+      const mockResult = {
+        data: [{ id: '1', name: 'Workflow 1' }],
+        totalFetched: 1,
+        pagesFetched: 1,
+        nextCursor: 'next-cursor',
+      };
+
+      mockWorkflows.list.mockResolvedValueOnce(mockResult);
+
+      await registerWorkflowTools(registry);
+      const tool = registry.getToolDefinition('listWorkflows')!;
+
+      const result = await tool.handler(
+        {
+          active: true,
+          limit: 5,
+          cursor: 'start-cursor',
+        },
+        mockContext
+      );
+
+      expect(mockWorkflows.list).toHaveBeenCalledWith({
+        active: true,
+        limit: 5,
+        cursor: 'start-cursor',
+      });
+      expect(result.workflows).toEqual(mockResult.data);
+      expect(result.pagination.nextCursor).toBe('next-cursor');
     });
   });
 
