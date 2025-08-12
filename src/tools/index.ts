@@ -120,7 +120,7 @@ export async function registerAllTools(
 
 function createModeAwareRegistry(registry: ToolRegistry, mode: Mode): ToolRegistry {
   const proxy = Object.create(registry);
-  
+
   proxy.register = (tool: any) => {
     const category = getToolCategory(tool.name);
     if (category && MODE_TOOLS[mode][category].length > 0) {
@@ -130,7 +130,7 @@ function createModeAwareRegistry(registry: ToolRegistry, mode: Mode): ToolRegist
       }
     }
   };
-  
+
   proxy.registerBatch = (tools: any[]) => {
     for (const tool of tools) {
       const category = getToolCategory(tool.name);
@@ -141,7 +141,7 @@ function createModeAwareRegistry(registry: ToolRegistry, mode: Mode): ToolRegist
       }
     }
   };
-  
+
   return proxy;
 }
 

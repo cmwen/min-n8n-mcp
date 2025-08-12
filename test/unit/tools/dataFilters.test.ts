@@ -213,10 +213,10 @@ describe('Data Filters', () => {
     });
 
     it('should handle missing connections and nodes gracefully', () => {
-      const workflowWithoutNodes = { 
-        ...mockWorkflow, 
+      const workflowWithoutNodes = {
+        ...mockWorkflow,
         connections: undefined as any,
-        nodes: undefined as any 
+        nodes: undefined as any,
       };
 
       const result = filterWorkflowData(workflowWithoutNodes, 'intermediate');
