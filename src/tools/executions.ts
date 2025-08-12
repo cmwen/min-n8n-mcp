@@ -1,5 +1,5 @@
 import type { ToolInputs } from '../schemas/index.js';
-import { filterExecutionData, filterExecutionList, getModeFromContext } from './dataFilters.js';
+import { filterExecutionList, getModeFromContext } from './dataFilters.js';
 import type { ToolRegistry } from './registry.js';
 import { createTool } from './registry.js';
 
@@ -54,7 +54,7 @@ export async function registerExecutionTools(registry: ToolRegistry): Promise<vo
           'Retrieved execution'
         );
 
-        return filterExecutionData(execution, mode);
+        return execution;
       }
     )
   );

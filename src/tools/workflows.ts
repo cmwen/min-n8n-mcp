@@ -1,5 +1,5 @@
 import type { ToolInputs } from '../schemas/index.js';
-import { filterWorkflowData, filterWorkflowList, getModeFromContext } from './dataFilters.js';
+import { filterWorkflowList, getModeFromContext } from './dataFilters.js';
 import type { ToolRegistry } from './registry.js';
 import { createTool } from './registry.js';
 
@@ -46,7 +46,7 @@ export async function registerWorkflowTools(registry: ToolRegistry): Promise<voi
 
         context.logger.info({ workflowId: input.id, mode }, 'Retrieved workflow');
 
-        return filterWorkflowData(workflow, mode);
+        return workflow;
       }
     )
   );
