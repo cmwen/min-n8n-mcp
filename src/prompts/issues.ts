@@ -61,10 +61,9 @@ export async function registerIssuesPrompt(
           // Filter by status
           if (includeSuccessful) {
             return true; // Include all statuses
-          } else {
-            // Only failed/error executions
-            return execution.status === 'error' || execution.status === 'failed';
           }
+          // Only failed/error executions
+          return execution.status === 'error' || execution.status === 'failed';
         });
 
         // Analyze issues
@@ -168,7 +167,7 @@ function analyzeExecutionIssues(executions: any[]) {
   const errorPatterns: { [key: string]: number } = {};
   const nodeFailures: { [key: string]: number } = {};
 
-  failedExecutions.forEach((execution) => {
+  for (const execution of failedExecutions) {
     const workflowId = execution.workflowId;
     if (!workflowFailures[workflowId]) {
       workflowFailures[workflowId] = [];
@@ -188,7 +187,7 @@ function analyzeExecutionIssues(executions: any[]) {
       const nodeName = execution.data.resultData.lastNodeExecuted;
       nodeFailures[nodeName] = (nodeFailures[nodeName] || 0) + 1;
     }
-  });
+  }
 
   return {
     totalExecutions: executions.length,
@@ -233,7 +232,7 @@ function buildIssuesAnalysis(
   timeframe: string,
   workflowId?: string
 ): string {
-  let report = `# 🔍 Issue Analysis Report\n\n`;
+  let report = '# 🔍 Issue Analysis Report\n\n';
 
   // Summary
   report += `## 📊 Summary (${timeframe.replace(/(\d+)/, '$1 ')})\n`;
@@ -246,18 +245,18 @@ function buildIssuesAnalysis(
   }
 
   if (analysis.failedExecutions === 0) {
-    report += `\n🎉 **Great news!** No failed executions found in the specified timeframe.\n`;
+    report += '\n🎉 **Great news!** No failed executions found in the specified timeframe.\n';
     return report;
   }
 
   // Most problematic workflows
-  report += `\n## 🚨 Most Problematic Workflows\n`;
+  report += '\n## 🚨 Most Problematic Workflows\n';
   const workflowFailureCounts = Object.entries(analysis.workflowFailures)
     .map(([id, failures]: [string, any]) => ({ id, count: failures.length, failures }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 5);
 
-  workflowFailureCounts.forEach(({ id, count, failures }) => {
+  for (const { id, count, failures } of workflowFailureCounts) {
     const workflow = workflows.find((w) => w?.id === id);
     const workflowName = workflow?.name || 'Unknown Workflow';
     report += `- **${workflowName}** (${id}): ${count} failures\n`;
@@ -275,45 +274,45 @@ function buildIssuesAnalysis(
       ).toLocaleString();
       report += `  - Latest failure: ${failTime}\n`;
     }
-  });
+  }
 
   // Common error patterns
-  report += `\n## 🐛 Common Error Patterns\n`;
+  report += '\n## 🐛 Common Error Patterns\n';
   const topErrors = Object.entries(analysis.errorPatterns)
     .sort(([, a], [, b]) => (b as number) - (a as number))
     .slice(0, 5);
 
   if (topErrors.length > 0) {
-    topErrors.forEach(([pattern, count]) => {
+    for (const [pattern, count] of topErrors) {
       report += `- **${pattern}**: ${count} occurrences\n`;
-    });
+    }
   } else {
-    report += `No specific error patterns identified.\n`;
+    report += 'No specific error patterns identified.\n';
   }
 
   // Node failure analysis
-  report += `\n## 🔧 Nodes with Most Failures\n`;
+  report += '\n## 🔧 Nodes with Most Failures\n';
   const topFailingNodes = Object.entries(analysis.nodeFailures)
     .sort(([, a], [, b]) => (b as number) - (a as number))
     .slice(0, 5);
 
   if (topFailingNodes.length > 0) {
-    topFailingNodes.forEach(([nodeName, count]) => {
+    for (const [nodeName, count] of topFailingNodes) {
       report += `- **${nodeName}**: ${count} failures\n`;
-    });
+    }
   } else {
-    report += `No specific node failure data available.\n`;
+    report += 'No specific node failure data available.\n';
   }
 
   // Recommendations
-  report += `\n## 💡 Recommended Actions\n`;
+  report += '\n## 💡 Recommended Actions\n';
 
   if (analysis.failureRate > 50) {
-    report += `1. **Critical**: Over 50% failure rate - immediate investigation required\n`;
+    report += '1. **Critical**: Over 50% failure rate - immediate investigation required\n';
   }
 
   // Specific recommendations based on error patterns
-  topErrors.forEach(([pattern, count]) => {
+  for (const [pattern, count] of topErrors) {
     if (pattern.includes('Authentication')) {
       report += `2. **Update Credentials**: ${count} authentication errors detected - check and refresh API keys/credentials\n`;
     } else if (pattern.includes('Connection')) {
@@ -323,16 +322,16 @@ function buildIssuesAnalysis(
     } else if (pattern.includes('Permission')) {
       report += `2. **Permissions**: ${count} permission errors - verify account permissions and access rights\n`;
     }
-  });
+  }
 
   // General recommendations
-  report += `3. **Monitor Trends**: Set up notifications for critical workflows\n`;
-  report += `4. **Error Handling**: Add error handling and retry logic to workflows\n`;
-  report += `5. **Testing**: Test workflows in isolation to identify root causes\n`;
+  report += '3. **Monitor Trends**: Set up notifications for critical workflows\n';
+  report += '4. **Error Handling**: Add error handling and retry logic to workflows\n';
+  report += '5. **Testing**: Test workflows in isolation to identify root causes\n';
 
   // Recent failures details
   if (analysis.failedExecutions > 0) {
-    report += `\n## 📋 Recent Failure Details\n`;
+    report += '\n## 📋 Recent Failure Details\n';
     const recentFailures = executions
       .filter((ex) => ex.status === 'error' || ex.status === 'failed')
       .sort(
@@ -342,7 +341,7 @@ function buildIssuesAnalysis(
       )
       .slice(0, 3);
 
-    recentFailures.forEach((execution) => {
+    for (const execution of recentFailures) {
       const workflow = workflows.find((w) => w?.id === execution.workflowId);
       const workflowName = workflow?.name || 'Unknown Workflow';
       const failTime = new Date(execution.stoppedAt || execution.startedAt).toLocaleString();
@@ -358,7 +357,7 @@ function buildIssuesAnalysis(
       if (execution.data?.resultData?.lastNodeExecuted) {
         report += `- **Failed Node**: ${execution.data.resultData.lastNodeExecuted}\n`;
       }
-    });
+    }
   }
 
   return report;

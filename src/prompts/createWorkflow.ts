@@ -112,13 +112,13 @@ function buildWorkflowCreationGuidance(
   sourceTags: any[],
   args: CreateWorkflowPromptArgs
 ): string {
-  let guidance = `# 🚀 Create New Workflow from Template\n\n`;
+  let guidance = '# 🚀 Create New Workflow from Template\n\n';
 
   // Get copyTags value once at the start
   const copyTags = args.copyTags !== 'false'; // default to true unless explicitly false
 
   // Source workflow information
-  guidance += `## 📋 Source Workflow Analysis\n`;
+  guidance += '## 📋 Source Workflow Analysis\n';
   guidance += `**Name**: ${sourceWorkflow.name}\n`;
   guidance += `**ID**: ${sourceWorkflow.id}\n`;
   guidance += `**Active**: ${sourceWorkflow.active ? 'Yes' : 'No'}\n`;
@@ -149,20 +149,20 @@ function buildWorkflowCreationGuidance(
   guidance += `- Action nodes: ${actionNodes.length}\n`;
 
   // List key nodes
-  guidance += `\n### 🔗 Key Nodes\n`;
+  guidance += '\n### 🔗 Key Nodes\n';
 
   if (triggerNodes.length > 0) {
-    guidance += `**Triggers**:\n`;
-    triggerNodes.forEach((node: any) => {
+    guidance += '**Triggers**:\n';
+    for (const node of triggerNodes) {
       guidance += `- ${node.name} (${node.type})\n`;
-    });
+    }
   }
 
   if (actionNodes.length > 0) {
-    guidance += `\n**Actions** (showing first 5):\n`;
-    actionNodes.slice(0, 5).forEach((node: any) => {
+    guidance += '\n**Actions** (showing first 5):\n';
+    for (const node of actionNodes.slice(0, 5)) {
       guidance += `- ${node.name} (${node.type})\n`;
-    });
+    }
 
     if (actionNodes.length > 5) {
       guidance += `- ... and ${actionNodes.length - 5} more nodes\n`;
@@ -170,27 +170,27 @@ function buildWorkflowCreationGuidance(
   }
 
   // Workflow pattern analysis
-  guidance += `\n### 🔍 Workflow Pattern\n`;
+  guidance += '\n### 🔍 Workflow Pattern\n';
   const pattern = analyzeWorkflowPattern(triggerNodes, actionNodes);
   guidance += pattern;
 
   // Creation guidance
-  guidance += `\n## 🛠️ Creation Steps\n`;
+  guidance += '\n## 🛠️ Creation Steps\n';
 
   const newWorkflowName = args.newWorkflowName || `${sourceWorkflow.name} (Copy)`;
 
-  guidance += `### 1. Create Base Workflow\n`;
+  guidance += '### 1. Create Base Workflow\n';
   guidance += `I'll help you create a workflow called **"${newWorkflowName}"** based on the source template.\n\n`;
 
-  guidance += `### 2. Workflow Structure to Copy\n`;
-  guidance += `The source workflow follows this pattern:\n`;
-  guidance += `\`\`\`\n`;
+  guidance += '### 2. Workflow Structure to Copy\n';
+  guidance += 'The source workflow follows this pattern:\n';
+  guidance += '```\n';
   guidance += `${generateWorkflowStructure(triggerNodes, actionNodes)}\n`;
-  guidance += `\`\`\`\n\n`;
+  guidance += '```\n\n';
 
   // Modification suggestions
   if (args.description) {
-    guidance += `### 3. Requested Modifications\n`;
+    guidance += '### 3. Requested Modifications\n';
     guidance += `Based on your description: "${args.description}"\n\n`;
     guidance += generateModificationSuggestions(args.description, sourceWorkflow);
   }
@@ -198,9 +198,9 @@ function buildWorkflowCreationGuidance(
   // Configuration guidance
   guidance += `### ${args.description ? '4' : '3'}. Configuration Considerations\n`;
   guidance += `- **Credentials**: You'll need to configure credentials for any external services\n`;
-  guidance += `- **Parameters**: Review and update node parameters for your specific use case\n`;
-  guidance += `- **Error Handling**: Consider adding error handling nodes if not present\n`;
-  guidance += `- **Testing**: Test the workflow in inactive mode before activating\n`;
+  guidance += '- **Parameters**: Review and update node parameters for your specific use case\n';
+  guidance += '- **Error Handling**: Consider adding error handling nodes if not present\n';
+  guidance += '- **Testing**: Test the workflow in inactive mode before activating\n';
 
   // Tags
   if (copyTags && sourceTags.length > 0) {
@@ -208,17 +208,17 @@ function buildWorkflowCreationGuidance(
   }
 
   // Next steps
-  guidance += `\n## 🎯 Next Steps\n`;
-  guidance += `1. Use the \`createWorkflow\` tool to create the base workflow\n`;
-  guidance += `2. Configure node credentials and parameters\n`;
-  guidance += `3. Test the workflow with sample data\n`;
-  guidance += `4. Apply tags and set up scheduling if needed\n`;
-  guidance += `5. Activate the workflow when ready\n`;
+  guidance += '\n## 🎯 Next Steps\n';
+  guidance += '1. Use the `createWorkflow` tool to create the base workflow\n';
+  guidance += '2. Configure node credentials and parameters\n';
+  guidance += '3. Test the workflow with sample data\n';
+  guidance += '4. Apply tags and set up scheduling if needed\n';
+  guidance += '5. Activate the workflow when ready\n';
 
   // Example JSON structure
-  guidance += `\n## 📝 Example Workflow JSON Structure\n`;
+  guidance += '\n## 📝 Example Workflow JSON Structure\n';
   guidance += `Here's a simplified structure you can use as a starting point:\n\n`;
-  guidance += `\`\`\`json\n`;
+  guidance += '```json\n';
   guidance += JSON.stringify(
     {
       name: newWorkflowName,
@@ -236,14 +236,14 @@ function buildWorkflowCreationGuidance(
     null,
     2
   );
-  guidance += `\n\`\`\`\n`;
+  guidance += '\n```\n';
 
   // Tools to use
-  guidance += `\n## 🔧 Relevant Tools\n`;
-  guidance += `- \`createWorkflow\` - Create the new workflow\n`;
-  guidance += `- \`getWorkflow\` - Get detailed source workflow structure\n`;
-  guidance += `- \`updateWorkflowTags\` - Apply tags to the new workflow\n`;
-  guidance += `- \`activateWorkflow\` - Activate when ready\n`;
+  guidance += '\n## 🔧 Relevant Tools\n';
+  guidance += '- `createWorkflow` - Create the new workflow\n';
+  guidance += '- `getWorkflow` - Get detailed source workflow structure\n';
+  guidance += '- `updateWorkflowTags` - Apply tags to the new workflow\n';
+  guidance += '- `activateWorkflow` - Activate when ready\n';
 
   return guidance;
 }
@@ -273,7 +273,7 @@ function analyzeWorkflowPattern(triggerNodes: any[], actionNodes: any[]): string
 
   // Analyze action patterns
   const serviceTypes = new Set();
-  actionNodes.forEach((node: any) => {
+  for (const node of actionNodes) {
     const nodeType = node.type?.toLowerCase() || '';
     if (nodeType.includes('gmail') || nodeType.includes('email')) serviceTypes.add('Email');
     if (nodeType.includes('slack') || nodeType.includes('discord')) serviceTypes.add('Chat');
@@ -285,7 +285,7 @@ function analyzeWorkflowPattern(triggerNodes: any[], actionNodes: any[]): string
     )
       serviceTypes.add('Database');
     if (nodeType.includes('file') || nodeType.includes('spreadsheet')) serviceTypes.add('Files');
-  });
+  }
 
   if (serviceTypes.size > 0) {
     pattern += `\nIntegrates with: ${Array.from(serviceTypes).join(', ')}`;
@@ -299,9 +299,9 @@ function generateWorkflowStructure(triggerNodes: any[], actionNodes: any[]): str
 
   if (triggerNodes.length > 0) {
     structure += 'TRIGGERS:\n';
-    triggerNodes.forEach((node: any) => {
+    for (const node of triggerNodes) {
       structure += `  → ${node.name} (${node.type})\n`;
-    });
+    }
     structure += '\n';
   }
 

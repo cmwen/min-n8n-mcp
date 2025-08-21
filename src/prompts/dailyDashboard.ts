@@ -41,7 +41,7 @@ export async function registerDailyDashboardPrompt(
           waiting: 0,
         };
 
-        recentExecutions.data?.forEach((execution: any) => {
+        for (const execution of (recentExecutions.data || []) as any[]) {
           const status = execution.status || 'unknown';
           switch (status) {
             case 'success':
@@ -58,7 +58,7 @@ export async function registerDailyDashboardPrompt(
               executionStats.waiting++;
               break;
           }
-        });
+        }
 
         // Build dashboard summary
         const dashboardText = buildDashboardSummary(
@@ -124,23 +124,23 @@ function buildDashboardSummary(
   const failureRate =
     executionStats.total > 0 ? Math.round((executionStats.failed / executionStats.total) * 100) : 0;
 
-  let summary = `# 📊 Daily n8n Dashboard Summary\n\n`;
+  let summary = '# 📊 Daily n8n Dashboard Summary\n\n';
 
   // Workflow Overview
   summary += `## 🔄 Active Workflows (${totalWorkflows})\n`;
   if (totalWorkflows > 0) {
-    activeWorkflows.slice(0, 10).forEach((workflow) => {
+    for (const workflow of activeWorkflows.slice(0, 10)) {
       summary += `- **${workflow.name}** (ID: ${workflow.id})${workflow.tags?.length ? ` [${workflow.tags.join(', ')}]` : ''}\n`;
-    });
+    }
     if (totalWorkflows > 10) {
       summary += `- ... and ${totalWorkflows - 10} more workflows\n`;
     }
   } else {
-    summary += `No active workflows found.\n`;
+    summary += 'No active workflows found.\n';
   }
 
   // Execution Statistics
-  summary += `\n## 📈 Recent Execution Statistics\n`;
+  summary += '\n## 📈 Recent Execution Statistics\n';
   summary += `- **Total Executions**: ${executionStats.total}\n`;
   summary += `- **Successful**: ${executionStats.successful} ✅\n`;
   summary += `- **Failed**: ${executionStats.failed} ❌\n`;
@@ -149,7 +149,7 @@ function buildDashboardSummary(
   summary += `- **Failure Rate**: ${failureRate}%\n`;
 
   // Recommendations
-  summary += `\n## 💡 Recommendations\n`;
+  summary += '\n## 💡 Recommendations\n';
 
   if (failureRate > 20) {
     summary += `- ⚠️ **High failure rate detected (${failureRate}%)** - Review failed executions and check for common issues\n`;
@@ -160,7 +160,8 @@ function buildDashboardSummary(
   }
 
   if (totalWorkflows === 0) {
-    summary += `- 🚀 **No active workflows** - Consider activating workflows or creating new automation\n`;
+    summary +=
+      '- 🚀 **No active workflows** - Consider activating workflows or creating new automation\n';
   }
 
   if (executionStats.running > 5) {
@@ -173,18 +174,18 @@ function buildDashboardSummary(
     .slice(0, 5);
 
   if (failedExecutions.length > 0) {
-    summary += `\n## ❌ Recent Failed Executions\n`;
-    failedExecutions.forEach((execution: any) => {
+    summary += '\n## ❌ Recent Failed Executions\n';
+    for (const execution of failedExecutions) {
       summary += `- **${execution.workflowData?.name || 'Unknown'}** (${execution.id}) - ${execution.stoppedAt ? new Date(execution.stoppedAt).toLocaleString() : 'Time unknown'}\n`;
-    });
+    }
   }
 
   // Actions Suggestion
-  summary += `\n## 🎯 Suggested Actions\n`;
+  summary += '\n## 🎯 Suggested Actions\n';
   summary += `1. **Review failed executions** - Use the "analyze-issues" prompt to get detailed failure analysis\n`;
-  summary += `2. **Check credentials** - Verify that all service credentials are up to date\n`;
-  summary += `3. **Monitor performance** - Ensure workflows are completing in reasonable time\n`;
-  summary += `4. **Update workflows** - Consider updating any outdated workflow configurations\n`;
+  summary += '2. **Check credentials** - Verify that all service credentials are up to date\n';
+  summary += '3. **Monitor performance** - Ensure workflows are completing in reasonable time\n';
+  summary += '4. **Update workflows** - Consider updating any outdated workflow configurations\n';
 
   return summary;
 }

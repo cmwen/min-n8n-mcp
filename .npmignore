@@ -1,0 +1,46 @@
+# Source files
+src/
+test/
+docs/
+
+# Development files
+*.log
+*.tsbuildinfo
+.DS_Store
+.env*
+.vscode/
+.idea/
+
+# Build tools
+tsconfig.json
+tsup.config.ts
+vitest.config.ts
+vitest.integration.config.ts
+biome.json
+.husky/
+
+# Development scripts
+test-*.sh
+test-*.js
+
+# GitHub workflows
+.github/
+
+# Node modules
+node_modules/
+
+# Coverage
+coverage/
+
+# Temporary files
+tmp/
+temp/
+
+# Development docs
+PROMPTS_IMPLEMENTATION.md
+CHANGELOG.md
+
+# Lock files (users should use their preferred package manager)
+pnpm-lock.yaml
+yarn.lock
+package-lock.json

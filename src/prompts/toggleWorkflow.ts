@@ -148,7 +148,6 @@ function buildUserPrompt(args: ToggleWorkflowPromptArgs): string {
     case 'toggle':
       prompt += 'I want to toggle the status of ';
       break;
-    case 'status':
     default:
       prompt += 'I want to check the status of ';
       break;
@@ -176,13 +175,13 @@ async function buildToggleResponse(
   args: ToggleWorkflowPromptArgs,
   context: ServerContext
 ): Promise<string> {
-  let response = `# 🔄 Workflow Status Management\n\n`;
+  let response = '# 🔄 Workflow Status Management\n\n';
 
   // Show current status
   const activeCount = workflows.filter((w) => w.active).length;
   const inactiveCount = workflows.length - activeCount;
 
-  response += `## 📊 Current Status Overview\n`;
+  response += '## 📊 Current Status Overview\n';
   response += `- **Total Workflows**: ${workflows.length}\n`;
   response += `- **Active**: ${activeCount} ✅\n`;
   response += `- **Inactive**: ${inactiveCount} ⏸️\n\n`;
@@ -208,17 +207,17 @@ async function buildToggleResponse(
   }
 
   // Add useful tools information
-  response += `\n## 🛠️ Available Tools\n`;
-  response += `- \`activateWorkflow\` - Activate a specific workflow\n`;
-  response += `- \`deactivateWorkflow\` - Deactivate a specific workflow\n`;
-  response += `- \`listWorkflows\` - List workflows with filters\n`;
-  response += `- \`getWorkflow\` - Get detailed workflow information\n`;
+  response += '\n## 🛠️ Available Tools\n';
+  response += '- `activateWorkflow` - Activate a specific workflow\n';
+  response += '- `deactivateWorkflow` - Deactivate a specific workflow\n';
+  response += '- `listWorkflows` - List workflows with filters\n';
+  response += '- `getWorkflow` - Get detailed workflow information\n';
 
   return response;
 }
 
 function buildStatusReport(workflows: any[]): string {
-  let report = `## 📋 Workflow Status Details\n\n`;
+  let report = '## 📋 Workflow Status Details\n\n';
 
   // Group workflows by status
   const activeWorkflows = workflows.filter((w) => w.active);
@@ -226,38 +225,39 @@ function buildStatusReport(workflows: any[]): string {
 
   if (activeWorkflows.length > 0) {
     report += `### ✅ Active Workflows (${activeWorkflows.length})\n`;
-    activeWorkflows.forEach((workflow) => {
+    for (const workflow of activeWorkflows) {
       report += `- **${workflow.name}** (${workflow.id})`;
       if (workflow.tags?.length) {
         report += ` [${workflow.tags.join(', ')}]`;
       }
-      report += `\n`;
-    });
-    report += `\n`;
+      report += '\n';
+    }
+    report += '\n';
   }
 
   if (inactiveWorkflows.length > 0) {
     report += `### ⏸️ Inactive Workflows (${inactiveWorkflows.length})\n`;
-    inactiveWorkflows.forEach((workflow) => {
+    for (const workflow of inactiveWorkflows) {
       report += `- **${workflow.name}** (${workflow.id})`;
       if (workflow.tags?.length) {
         report += ` [${workflow.tags.join(', ')}]`;
       }
-      report += `\n`;
-    });
-    report += `\n`;
+      report += '\n';
+    }
+    report += '\n';
   }
 
   // Recommendations
-  report += `### 💡 Recommendations\n`;
+  report += '### 💡 Recommendations\n';
   if (inactiveWorkflows.length > activeWorkflows.length) {
-    report += `- You have more inactive workflows than active ones. Consider reviewing and activating needed workflows.\n`;
+    report +=
+      '- You have more inactive workflows than active ones. Consider reviewing and activating needed workflows.\n';
   }
   if (activeWorkflows.length > 10) {
     report += `- You have many active workflows (${activeWorkflows.length}). Monitor system performance and resource usage.\n`;
   }
   if (workflows.length === 0) {
-    report += `- No workflows found. Consider creating some automation workflows.\n`;
+    report += '- No workflows found. Consider creating some automation workflows.\n';
   }
 
   return report;
@@ -281,98 +281,98 @@ async function buildActivationPlan(
   plan += `**Workflows to ${activate ? 'activate' : 'deactivate'}**: ${targetWorkflows.length}\n\n`;
 
   // List workflows with considerations
-  plan += `### 📝 Workflows to Process\n`;
+  plan += '### 📝 Workflows to Process\n';
   targetWorkflows.forEach((workflow, index) => {
     plan += `${index + 1}. **${workflow.name}** (${workflow.id})\n`;
 
     // Add considerations for activation/deactivation
     if (activate) {
-      plan += `   - ⚠️ Ensure credentials are configured and valid\n`;
-      plan += `   - 🧪 Consider testing before activation\n`;
+      plan += '   - ⚠️ Ensure credentials are configured and valid\n';
+      plan += '   - 🧪 Consider testing before activation\n';
     } else {
-      plan += `   - 📊 Check if this workflow is currently processing important data\n`;
-      plan += `   - 🔗 Verify no other workflows depend on this one\n`;
+      plan += '   - 📊 Check if this workflow is currently processing important data\n';
+      plan += '   - 🔗 Verify no other workflows depend on this one\n';
     }
   });
 
   // Execution steps
-  plan += `\n### 🚀 Execution Steps\n`;
+  plan += '\n### 🚀 Execution Steps\n';
 
   if (targetWorkflows.length === 1) {
     const workflow = targetWorkflows[0];
     plan += `**Single Workflow ${action}**:\n`;
-    plan += `\`\`\`\n`;
+    plan += '```\n';
     plan += `${activate ? 'activateWorkflow' : 'deactivateWorkflow'}({ id: "${workflow.id}" })\n`;
-    plan += `\`\`\`\n`;
+    plan += '```\n';
   } else {
     plan += `**Bulk ${action}** (execute these commands in sequence):\n`;
-    plan += `\`\`\`\n`;
-    targetWorkflows.forEach((workflow) => {
+    plan += '```\n';
+    for (const workflow of targetWorkflows) {
       plan += `${activate ? 'activateWorkflow' : 'deactivateWorkflow'}({ id: "${workflow.id}" })\n`;
-    });
-    plan += `\`\`\`\n`;
+    }
+    plan += '```\n';
   }
 
   // Warnings and considerations
-  plan += `\n### ⚠️ Important Considerations\n`;
+  plan += '\n### ⚠️ Important Considerations\n';
 
   if (activate) {
-    plan += `- **Credentials**: Verify all external service credentials are valid\n`;
-    plan += `- **Dependencies**: Ensure required services and APIs are accessible\n`;
-    plan += `- **Resource Usage**: Monitor system resources after activation\n`;
-    plan += `- **Testing**: Test workflows with sample data first if possible\n`;
+    plan += '- **Credentials**: Verify all external service credentials are valid\n';
+    plan += '- **Dependencies**: Ensure required services and APIs are accessible\n';
+    plan += '- **Resource Usage**: Monitor system resources after activation\n';
+    plan += '- **Testing**: Test workflows with sample data first if possible\n';
   } else {
-    plan += `- **Data Loss**: Ensure no important data processing will be interrupted\n`;
-    plan += `- **Dependencies**: Check if other workflows depend on these\n`;
-    plan += `- **Scheduling**: Consider if these workflows are scheduled for important times\n`;
-    plan += `- **Notifications**: Update any dependent systems about the deactivation\n`;
+    plan += '- **Data Loss**: Ensure no important data processing will be interrupted\n';
+    plan += '- **Dependencies**: Check if other workflows depend on these\n';
+    plan += '- **Scheduling**: Consider if these workflows are scheduled for important times\n';
+    plan += '- **Notifications**: Update any dependent systems about the deactivation\n';
   }
 
   return plan;
 }
 
 async function buildTogglePlan(workflows: any[], context: ServerContext): Promise<string> {
-  let plan = `## 🔄 Toggle Plan\n\n`;
+  let plan = '## 🔄 Toggle Plan\n\n';
 
   const toActivate = workflows.filter((w) => !w.active);
   const toDeactivate = workflows.filter((w) => w.active);
 
-  plan += `**Changes to make**:\n`;
+  plan += '**Changes to make**:\n';
   plan += `- Activate: ${toActivate.length} workflows\n`;
   plan += `- Deactivate: ${toDeactivate.length} workflows\n\n`;
 
   if (toActivate.length > 0) {
-    plan += `### ✅ Workflows to Activate\n`;
-    toActivate.forEach((workflow) => {
+    plan += '### ✅ Workflows to Activate\n';
+    for (const workflow of toActivate) {
       plan += `- **${workflow.name}** (${workflow.id})\n`;
-    });
-    plan += `\n`;
+    }
+    plan += '\n';
   }
 
   if (toDeactivate.length > 0) {
-    plan += `### ⏸️ Workflows to Deactivate\n`;
-    toDeactivate.forEach((workflow) => {
+    plan += '### ⏸️ Workflows to Deactivate\n';
+    for (const workflow of toDeactivate) {
       plan += `- **${workflow.name}** (${workflow.id})\n`;
-    });
-    plan += `\n`;
+    }
+    plan += '\n';
   }
 
   // Execution commands
-  plan += `### 🚀 Toggle Commands\n`;
-  plan += `\`\`\`\n`;
+  plan += '### 🚀 Toggle Commands\n';
+  plan += '```\n';
 
-  toActivate.forEach((workflow) => {
+  for (const workflow of toActivate) {
     plan += `activateWorkflow({ id: "${workflow.id}" })\n`;
-  });
+  }
 
-  toDeactivate.forEach((workflow) => {
+  for (const workflow of toDeactivate) {
     plan += `deactivateWorkflow({ id: "${workflow.id}" })\n`;
-  });
+  }
 
-  plan += `\`\`\`\n`;
+  plan += '```\n';
 
   if (toActivate.length === 0 && toDeactivate.length === 0) {
-    plan += `**No changes needed** - all workflows will maintain their current state.\n`;
+    plan += '**No changes needed** - all workflows will maintain their current state.\n';
   }
 
   return plan;
