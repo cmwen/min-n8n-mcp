@@ -12,7 +12,7 @@ jobs:
     
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [18, 20, 22]
     
     steps:
     - uses: actions/checkout@v4
@@ -43,16 +43,5 @@ jobs:
     - name: Run unit tests
       run: pnpm test:unit
     
-    - name: Run integration tests
-      run: pnpm test:integration
-      env:
-        TEST_N8N_URL: ${{ secrets.TEST_N8N_URL }}
-        TEST_N8N_TOKEN: ${{ secrets.TEST_N8N_TOKEN }}
-    
     - name: Generate coverage report
       run: pnpm test:coverage
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}

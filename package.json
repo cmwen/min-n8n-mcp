@@ -1,5 +1,5 @@
 {
-  "name": "min-n8n-mcp",
+  "name": "@cmwen/min-n8n-mcp",
   "version": "0.1.0",
   "description": "Local MCP server for n8n workflow management",
   "main": "dist/index.js",
@@ -26,7 +26,10 @@
     "test:performance": "vitest run test/integration/performance.test.ts",
     "type-check": "tsc --noEmit",
     "prepare": "husky",
-    "prepack": "pnpm build"
+    "prepack": "pnpm build",
+    "prepublishOnly": "pnpm test:ci && pnpm build",
+    "postpublish": "echo 'Published @cmwen/min-n8n-mcp successfully!'",
+    "prepare-release": "./scripts/prepare-release.sh"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
@@ -50,10 +53,18 @@
     "vitest": "^1.2.0"
   },
   "keywords": ["mcp", "n8n", "workflow", "automation", "model-context-protocol"],
+  "author": "cmwen",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cmwen/min-n8n-mcp.git"
   },
+  "bugs": {
+    "url": "https://github.com/cmwen/min-n8n-mcp/issues"
+  },
+  "homepage": "https://github.com/cmwen/min-n8n-mcp#readme",
   "license": "MIT",
-  "files": ["dist"]
+  "files": ["dist", "README.md"],
+  "publishConfig": {
+    "access": "public"
+  }
 }

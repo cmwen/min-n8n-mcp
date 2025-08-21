@@ -7,6 +7,7 @@ import express from 'express';
 import type { Config } from './config.js';
 import { HttpClient } from './http/client.js';
 import type { Logger } from './logging.js';
+import { registerAllPrompts } from './prompts/index.js';
 import { type ResourceClients, createResourceClients } from './resources/index.js';
 import { registerAllTools } from './tools/index.js';
 import { ToolRegistry } from './tools/registry.js';
@@ -58,6 +59,7 @@ export async function createServer(config: Config, logger: Logger): Promise<MinN
     {
       capabilities: {
         tools: {},
+        prompts: {},
       },
     }
   );
@@ -66,6 +68,9 @@ export async function createServer(config: Config, logger: Logger): Promise<MinN
   const registry = new ToolRegistry();
   await registerAllTools(registry, config.mode);
   await registry.setupMcpHandlers(server, context);
+
+  // Register prompts
+  await registerAllPrompts(server, context);
 
   logger.info(
     {

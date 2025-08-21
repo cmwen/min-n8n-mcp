@@ -1,14 +1,14 @@
-# min-n8n-mcp
+# @cmwen/min-n8n-mcp
 
 > Local n8n MCP (Model Context Protocol) server that provides AI agents programmatic access to n8n workflows via REST API.
 
-[![npm version](https://badge.fury.io/js/min-n8n-mcp.svg)](https://www.npmjs.com/package/min-n8n-mcp)
+[![npm version](https://badge.fury.io/js/@cmwen%2Fmin-n8n-mcp.svg)](https://www.npmjs.com/package/@cmwen/min-n8n-mcp)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
 
-**min-n8n-mcp** is a TypeScript-based MCP server that exposes n8n workflow management capabilities as callable tools for AI agents and LLMs. It acts as a thin, typed proxy to your n8n instance's REST API, enabling programmatic workflow automation through the Model Context Protocol.
+**@cmwen/min-n8n-mcp** is a TypeScript-based MCP server that exposes n8n workflow management capabilities as callable tools for AI agents and LLMs. It acts as a thin, typed proxy to your n8n instance's REST API, enabling programmatic workflow automation through the Model Context Protocol.
 
 ### Key Features
 
@@ -26,10 +26,10 @@
 
 ```bash
 # Run directly with npx (recommended)
-npx min-n8n-mcp
+npx @cmwen/min-n8n-mcp
 
 # Or install globally
-npm install -g min-n8n-mcp
+npm install -g @cmwen/min-n8n-mcp
 min-n8n-mcp
 ```
 
@@ -49,12 +49,12 @@ export N8N_API_TOKEN="your-api-token-here"  # Your n8n API token
 
 2. **Start in STDIO Mode** (default, for agent integration):
 ```bash
-npx min-n8n-mcp
+npx @cmwen/min-n8n-mcp
 ```
 
 3. **Start in HTTP Mode** (for MCP Inspector/debugging):
 ```bash
-npx min-n8n-mcp --http --http-port 3000
+npx @cmwen/min-n8n-mcp --http --http-port 3000
 ```
 
 ## Communication Modes
@@ -92,15 +92,15 @@ The MCP server offers three operating modes to balance functionality with perfor
 
 ```bash
 # Use default intermediate mode
-npx min-n8n-mcp
+npx @cmwen/min-n8n-mcp
 
 # Specify mode explicitly
-npx min-n8n-mcp --mode basic
-npx min-n8n-mcp --mode intermediate
-npx min-n8n-mcp --mode advanced
+npx @cmwen/min-n8n-mcp --mode basic
+npx @cmwen/min-n8n-mcp --mode intermediate
+npx @cmwen/min-n8n-mcp --mode advanced
 
 # Via environment variable
-MCP_MODE=basic npx min-n8n-mcp
+MCP_MODE=basic npx @cmwen/min-n8n-mcp
 ```
 
 ## Available Tools
@@ -304,17 +304,17 @@ pnpm test:e2e           # End-to-end tests
 
 5. **"keyValidator._parse is not a function"**
    - This was a known issue with MCP tool validation that has been fixed
-   - Ensure you're using the latest version of min-n8n-mcp
+   - Ensure you're using the latest version of @cmwen/min-n8n-mcp
    - If persisting, try rebuilding: `pnpm build`
 
 ### Debug Mode
 
 ```bash
 # Enable debug logging
-LOG_LEVEL=debug npx min-n8n-mcp
+LOG_LEVEL=debug npx @cmwen/min-n8n-mcp
 
 # Print configuration without starting server
-npx min-n8n-mcp --print-config
+npx @cmwen/min-n8n-mcp --print-config
 ```
 
 ## Contributing
