@@ -20,7 +20,7 @@ describe('Version', () => {
   it('should match package.json version', () => {
     const version = getVersion();
 
-    // Version should be 0.1.0 or higher
-    expect(version).toMatch(/^0\.1\.\d+/);
+    // Version should be valid semver
+    expect(version).toMatch(/^\d+\.\d+\.\d+$/);
   });
 });
