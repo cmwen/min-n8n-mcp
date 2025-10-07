@@ -1,6 +1,7 @@
 import { fetch } from 'undici';
 import type { Config } from '../config.js';
 import type { Logger } from '../logging.js';
+import { getVersion } from '../version.js';
 import { HttpError, NetworkError, TimeoutError, logError } from './errors.js';
 import { DEFAULT_RATE_LIMIT_CONFIG, createRateLimiter } from './rateLimit.js';
 import { DEFAULT_RETRY_CONFIG, type RetryConfig, shouldRetryMethod, withRetry } from './retry.js';
@@ -36,7 +37,7 @@ export class HttpClient {
     this.defaultHeaders = {
       'X-N8N-API-KEY': options.apiToken,
       'Content-Type': 'application/json',
-      'User-Agent': 'min-n8n-mcp/0.1.0',
+      'User-Agent': `min-n8n-mcp/${getVersion()}`,
     };
     this.timeout = options.timeout;
     this.retryConfig = {

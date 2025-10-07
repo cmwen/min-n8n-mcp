@@ -11,6 +11,7 @@ import { registerAllPrompts } from './prompts/index.js';
 import { type ResourceClients, createResourceClients } from './resources/index.js';
 import { registerAllTools } from './tools/index.js';
 import { ToolRegistry } from './tools/registry.js';
+import { getVersion } from './version.js';
 
 export interface ServerContext {
   config: Config;
@@ -54,7 +55,7 @@ export async function createServer(config: Config, logger: Logger): Promise<MinN
   const server = new McpServer(
     {
       name: 'min-n8n-mcp',
-      version: '0.1.0',
+      version: getVersion(),
     },
     {
       capabilities: {

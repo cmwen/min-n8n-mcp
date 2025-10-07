@@ -58,10 +58,23 @@ export function loadConfig(cliOptions: Record<string, any> = {}): Config {
     return ConfigSchema.parse(merged);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const issues = error.issues
-        .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
-        .join('\n');
-      throw new Error(`Configuration validation failed:\n${issues}`);
+      const issues = error.issues.map((issue) => {
+        const path = issue.path.join('.');
+        const message = issue.message;
+
+        // Provide helpful hints for common configuration errors
+        if (path === 'n8nApiUrl') {
+          return `❌ ${path}: ${message}\n   Set via: N8N_API_URL environment variable or --url CLI flag\n   Example: export N8N_API_URL="http://localhost:5678"`;
+        }
+        if (path === 'n8nApiToken') {
+          return `❌ ${path}: ${message}\n   Set via: N8N_API_TOKEN environment variable or --token CLI flag\n   Example: export N8N_API_TOKEN="your-api-token-here"\n   Get your token from: n8n Settings > API`;
+        }
+        return `❌ ${path}: ${message}`;
+      });
+
+      throw new Error(
+        `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nConfiguration validation failed:\n\n${issues.join('\n\n')}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`
+      );
     }
     throw error;
   }

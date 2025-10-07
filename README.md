@@ -37,9 +37,11 @@ min-n8n-mcp
 
 - **Node.js**: >=18.0.0 (uses built-in fetch)
 - **n8n Instance**: Local or remote n8n server with API access
-- **API Token**: n8n API key for authentication
+- **API Token**: n8n API key for authentication ([How to get your API token](docs/TROUBLESHOOTING.md#getting-your-n8n-api-token))
 
 ### Basic Usage
+
+**⚠️ Important:** Both `N8N_API_URL` and `N8N_API_TOKEN` are required. The server will fail immediately with helpful error messages if either is missing.
 
 1. **Set Environment Variables**:
 ```bash
@@ -55,6 +57,15 @@ npx @cmwen/min-n8n-mcp
 3. **Start in HTTP Mode** (for MCP Inspector/debugging):
 ```bash
 npx @cmwen/min-n8n-mcp --http --http-port 3000
+```
+
+### Quick Validation
+
+```bash
+# Verify configuration (token will be redacted in output)
+N8N_API_URL="http://localhost:5678" \
+N8N_API_TOKEN="your-token" \
+npx @cmwen/min-n8n-mcp --print-config
 ```
 
 ## Communication Modes
@@ -285,27 +296,31 @@ pnpm test:e2e           # End-to-end tests
 
 ### Common Issues
 
-1. **"pnpm not found"**
+1. **Configuration validation failed**
+   - Ensure both `N8N_API_URL` and `N8N_API_TOKEN` are set
+   - The server provides detailed error messages with setup instructions
+   - See [Troubleshooting Guide](docs/TROUBLESHOOTING.md#configuration-issues)
+
+2. **"Cannot connect to n8n API"**
+   - Verify n8n is running and accessible: `curl http://localhost:5678/healthz`
+   - Check firewall/network settings
+   - See [Troubleshooting Guide](docs/TROUBLESHOOTING.md#connection-issues)
+
+3. **"pnpm not found"** (development only)
    ```bash
    npm install -g pnpm
    ```
 
-2. **"Configuration validation failed"**
-   - Ensure `N8N_API_URL` and `N8N_API_TOKEN` are set
-   - Check n8n instance is running and accessible
-
-3. **"Connection refused"**
-   - Verify n8n URL is correct and accessible
-   - Check firewall/network settings
-
-4. **"Unauthorized"**
-   - Verify API token is valid
-   - Check token has necessary permissions
+4. **"Unauthorized" or "Invalid API token"**
+   - Verify API token is correct
+   - Generate new token in n8n Settings > API
+   - See [Troubleshooting Guide](docs/TROUBLESHOOTING.md#authentication-issues)
 
 5. **"keyValidator._parse is not a function"**
-   - This was a known issue with MCP tool validation that has been fixed
-   - Ensure you're using the latest version of @cmwen/min-n8n-mcp
-   - If persisting, try rebuilding: `pnpm build`
+   - This was a known issue that has been fixed
+   - Update to latest version: `npx @cmwen/min-n8n-mcp@latest`
+
+For comprehensive troubleshooting, see **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)**.
 
 ### Debug Mode
 
@@ -354,10 +369,13 @@ See [Implementation Roadmap](docs/IMPLEMENTATION_ROADMAP.md) for detailed progre
 
 ## API Documentation
 
-For detailed API documentation, see:
-- [Technical Design](docs/TECHNICAL_DESIGN.md) - Architecture and implementation details
-- [Product Requirements](docs/PRD.md) - Complete tool specifications
-- [OpenAPI Specification](docs/openapi.yml) - n8n API reference
+For detailed information, see:
+- **[Usage Examples](docs/EXAMPLES.md)** - Comprehensive examples for all use cases
+- **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Solve common issues
+- **[Known Limitations](docs/KNOWN_LIMITATIONS.md)** - API coverage and missing features
+- **[Technical Design](docs/TECHNICAL_DESIGN.md)** - Architecture and implementation details
+- **[Product Requirements](docs/PRD.md)** - Complete tool specifications
+- **[OpenAPI Specification](docs/openapi.yml)** - n8n API reference
 
 ## License
 

@@ -4,13 +4,14 @@ import { Command } from 'commander';
 import { loadConfig } from './config.js';
 import { createLogger } from './logging.js';
 import { createServer, startHttpServer, startStdioServer } from './server.js';
+import { getVersion } from './version.js';
 
 const program = new Command();
 
 program
   .name('min-n8n-mcp')
   .description('Local MCP server for n8n workflow management')
-  .version('0.1.0');
+  .version(getVersion());
 
 program
   .option('--url <url>', 'n8n API base URL')
