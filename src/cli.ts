@@ -27,7 +27,9 @@ program
   .action(async (options) => {
     try {
       const config = loadConfig(options);
-      const logger = createLogger(config.logLevel);
+      const logger = config.httpMode
+        ? createLogger(config.logLevel)
+        : createLogger(config.logLevel, { destination: 'stderr' });
 
       if (options.printConfig) {
         const sanitizedConfig = {
