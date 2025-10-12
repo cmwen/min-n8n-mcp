@@ -37,7 +37,10 @@ export class UserResourceClient {
     this.logger.debug({ params }, 'Listing users');
 
     const paginationOptions = extractPaginationFromQuery(query);
-    return this.pagination.fetchAll('/users', paginationOptions);
+    return this.pagination.fetchAll('/users', {
+      ...paginationOptions,
+      queryParams: params,
+    });
   }
 
   async create(data: UserData) {
@@ -63,6 +66,6 @@ export class UserResourceClient {
 
   async changeRole(id: string, role: string) {
     this.logger.debug({ id, role }, 'Changing user role');
-    return this.httpClient.patch(`/users/${id}/role`, { role });
+    return this.httpClient.patch(`/users/${id}/role`, { newRoleName: role });
   }
 }

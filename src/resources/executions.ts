@@ -10,6 +10,7 @@ export interface ExecutionQuery extends PaginationOptions {
   workflowId?: string;
   status?: 'success' | 'error' | 'waiting' | 'running';
   includeData?: boolean;
+  projectId?: string;
 }
 
 export class ExecutionResourceClient {
@@ -28,10 +29,13 @@ export class ExecutionResourceClient {
 
     this.logger.debug({ params, paginationOptions }, 'Listing executions');
 
+    const { limit, cursor, ...queryParams } = params;
+
     return this.pagination.fetchAll('/executions', {
       ...paginationOptions,
-      limit: params.limit,
-      cursor: params.cursor,
+      limit,
+      cursor,
+      queryParams,
     });
   }
 
@@ -65,6 +69,10 @@ export class ExecutionResourceClient {
 
     if (query.includeData !== undefined) {
       params.includeData = query.includeData;
+    }
+
+    if (query.projectId) {
+      params.projectId = query.projectId;
     }
 
     if (query.limit) {

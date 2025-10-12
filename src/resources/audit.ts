@@ -1,9 +1,13 @@
 import type { HttpClient } from '../http/client.js';
 import type { Logger } from '../logging.js';
 
-export interface AuditQuery {
-  daysAgoFrom?: number;
-  daysAgoTo?: number;
+export type AuditCategory = 'credentials' | 'database' | 'nodes' | 'filesystem' | 'instance';
+
+export interface AuditRequest {
+  additionalOptions?: {
+    daysAbandonedWorkflow?: number;
+    categories?: AuditCategory[];
+  };
 }
 
 export class AuditResourceClient {
@@ -12,19 +16,11 @@ export class AuditResourceClient {
     private logger: Logger
   ) {}
 
-  async generate(query: AuditQuery = {}) {
-    this.logger.debug({ query }, 'Generating audit report');
+  async generate(request: AuditRequest = {}) {
+    this.logger.debug({ request }, 'Generating audit report');
 
-    const params: Record<string, any> = {};
+    const hasBody = Object.keys(request).length > 0;
 
-    if (query.daysAgoFrom !== undefined) {
-      params.daysAgoFrom = query.daysAgoFrom;
-    }
-
-    if (query.daysAgoTo !== undefined) {
-      params.daysAgoTo = query.daysAgoTo;
-    }
-
-    return this.httpClient.get('/audit', params);
+    return this.httpClient.post('/audit', hasBody ? request : undefined);
   }
 }

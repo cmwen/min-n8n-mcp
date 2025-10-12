@@ -2,12 +2,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpClient } from '../../../src/http/client.js';
 import { createLogger } from '../../../src/logging.js';
 import { createResourceClients } from '../../../src/resources/index.js';
+import type { AuditRequest, ProjectUserRelation } from '../../../src/resources/index.js';
 
 // Mock the HTTP client
 const mockHttpClient = {
   get: vi.fn(),
   post: vi.fn(),
   put: vi.fn(),
+  patch: vi.fn(),
   delete: vi.fn(),
 };
 
@@ -245,6 +247,30 @@ describe('Resource Clients', () => {
       expect(mockHttpClient.delete).toHaveBeenCalledWith('/executions/exec-1');
       expect(result).toEqual(mockResult);
     });
+
+    it('should forward filters including projectId and includeData', async () => {
+      const mockResponse = {
+        data: [{ id: 'exec-3', status: 'success', workflowId: 'wf-9' }],
+        count: 1,
+      };
+
+      mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+
+      const result = await clients.executions.list({
+        projectId: 'proj-9',
+        includeData: true,
+        status: 'success',
+        limit: 25,
+      });
+
+      expect(mockHttpClient.get).toHaveBeenCalledWith('/executions', {
+        projectId: 'proj-9',
+        includeData: true,
+        status: 'success',
+        limit: 25,
+      });
+      expect(result.data).toEqual(mockResponse.data);
+    });
   });
 
   describe('User Client', () => {
@@ -289,6 +315,72 @@ describe('Resource Clients', () => {
 
       expect(mockHttpClient.post).toHaveBeenCalledWith('/users', userData);
       expect(result).toEqual(mockCreated);
+    });
+
+    it('should include role metadata when requested', async () => {
+      const mockResponse = {
+        data: [{ id: '1', email: 'user@example.com', role: 'global:member' }],
+        count: 1,
+      };
+
+      mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+
+      await clients.users.list({ limit: 5, includeRole: true });
+
+      expect(mockHttpClient.get).toHaveBeenCalledWith('/users', {
+        limit: 5,
+        includeRole: true,
+      });
+    });
+  });
+
+  describe('Project Client', () => {
+    it('should add users in a single request payload', async () => {
+      const mockResult = { created: true };
+      mockHttpClient.post.mockResolvedValueOnce(mockResult);
+
+      const relations: ProjectUserRelation[] = [
+        { userId: 'user-1', role: 'project:editor' },
+        { userId: 'user-2', role: 'project:viewer' },
+      ];
+
+      const result = await clients.projects.addUsers('project-1', relations);
+
+      expect(mockHttpClient.post).toHaveBeenCalledWith('/projects/project-1/users', {
+        relations,
+      });
+      expect(result).toEqual(mockResult);
+    });
+
+    it('should update project user role via PATCH', async () => {
+      const mockResult = { ok: true };
+      mockHttpClient.patch.mockResolvedValueOnce(mockResult);
+
+      const result = await clients.projects.updateUserRole('project-1', 'user-9', 'project:admin');
+
+      expect(mockHttpClient.patch).toHaveBeenCalledWith('/projects/project-1/users/user-9', {
+        role: 'project:admin',
+      });
+      expect(result).toEqual(mockResult);
+    });
+  });
+
+  describe('Audit Client', () => {
+    it('should post audit generation requests with additional options', async () => {
+      const mockResult = { report: [] };
+      mockHttpClient.post.mockResolvedValueOnce(mockResult);
+
+      const request: AuditRequest = {
+        additionalOptions: {
+          daysAbandonedWorkflow: 7,
+          categories: ['credentials', 'nodes'],
+        },
+      };
+
+      const result = await clients.audit.generate(request);
+
+      expect(mockHttpClient.post).toHaveBeenCalledWith('/audit', request);
+      expect(result).toEqual(mockResult);
     });
   });
 
