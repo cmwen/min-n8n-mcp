@@ -1,3 +1,4 @@
+import type { ProjectUserRelation, ProjectUserRole } from '../resources/index.js';
 import type { ToolInputs } from '../schemas/index.js';
 import type { ToolRegistry } from './registry.js';
 import { createTool } from './registry.js';
@@ -93,20 +94,34 @@ export async function registerProjectTools(registry: ToolRegistry): Promise<void
       'addUsersToProject',
       'Add one or more users to a project with specified roles',
       async (input: ToolInputs['addUsersToProject'], context) => {
-        const results = [];
-        for (const user of input.users) {
-          const result = await context.resources.projects.addUser(input.projectId, {
+        const relations: ProjectUserRelation[] = input.users.map((user) => {
+          const rawRole = user.role ? String(user.role) : 'project:viewer';
+          const normalized = rawRole.startsWith('project:') ? rawRole : `project:${rawRole}`;
+
+          if (
+            normalized !== 'project:owner' &&
+            normalized !== 'project:admin' &&
+            normalized !== 'project:editor' &&
+            normalized !== 'project:viewer'
+          ) {
+            throw new Error(
+              `Invalid project role '${rawRole}'. Expected owner|admin|editor|viewer (optionally prefixed with project:).`
+            );
+          }
+
+          return {
             userId: user.id,
-            role: (user.role as any) || 'viewer',
-          });
-          results.push(result);
-        }
+            role: normalized as ProjectUserRole,
+          };
+        });
+
+        const result = await context.resources.projects.addUsers(input.projectId, relations);
 
         context.logger.info(
           {
             projectId: input.projectId,
             userCount: input.users.length,
-            users: input.users.map((u) => ({ id: u.id, role: u.role })),
+            users: relations,
           },
           'Added users to project'
         );
@@ -115,7 +130,7 @@ export async function registerProjectTools(registry: ToolRegistry): Promise<void
           success: true,
           projectId: input.projectId,
           usersAdded: input.users.length,
-          results,
+          result,
           message: 'Users added to project successfully',
         };
       }

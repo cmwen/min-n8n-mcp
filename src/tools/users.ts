@@ -102,12 +102,13 @@ export async function registerUserTools(registry: ToolRegistry): Promise<void> {
       'changeUserRole',
       'Change the global role of a user',
       async (input: ToolInputs['changeUserRole'], context) => {
-        const result = await context.resources.users.changeRole(input.id, input.role);
+        const normalizedRole = input.role.includes(':') ? input.role : `global:${input.role}`;
+        const result = await context.resources.users.changeRole(input.id, normalizedRole);
 
         context.logger.info(
           {
             userId: input.id,
-            newRole: input.role,
+            newRole: normalizedRole,
           },
           'Changed user role'
         );
@@ -115,7 +116,7 @@ export async function registerUserTools(registry: ToolRegistry): Promise<void> {
         return {
           success: true,
           userId: input.id,
-          role: input.role,
+          role: normalizedRole,
           message: 'User role changed successfully',
         };
       }

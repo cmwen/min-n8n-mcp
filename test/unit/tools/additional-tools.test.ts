@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createLogger } from '../../../src/logging.js';
 import type { ResourceClients } from '../../../src/resources/index.js';
 import type { ServerContext } from '../../../src/server.js';
+import { registerProjectTools } from '../../../src/tools/projects.js';
 import { ToolRegistry } from '../../../src/tools/registry.js';
 import { registerTagTools } from '../../../src/tools/tags.js';
 import { registerUserTools } from '../../../src/tools/users.js';
@@ -11,6 +12,7 @@ describe('Additional Tool Tests', () => {
   let mockContext: ServerContext;
   let mockUsers: any;
   let mockTags: any;
+  let mockProjects: any;
 
   beforeEach(() => {
     registry = new ToolRegistry();
@@ -22,6 +24,7 @@ describe('Additional Tool Tests', () => {
       create: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
+      changeRole: vi.fn(),
     };
 
     mockTags = {
@@ -32,13 +35,26 @@ describe('Additional Tool Tests', () => {
       delete: vi.fn(),
     };
 
+    mockProjects = {
+      addUsers: vi.fn(),
+      removeUser: vi.fn(),
+      updateUserRole: vi.fn(),
+    };
+
     mockContext = {
       config: {} as any,
       logger: createLogger('error'),
       httpClient: {} as any,
       resources: {
+        workflows: {} as any,
+        executions: {} as any,
+        credentials: {} as any,
         users: mockUsers,
         tags: mockTags,
+        variables: {} as any,
+        projects: mockProjects,
+        audit: {} as any,
+        sourceControl: {} as any,
       } as ResourceClients,
     };
   });
@@ -110,6 +126,18 @@ describe('Additional Tool Tests', () => {
         message: 'User created successfully',
       });
       expect(result.password).toBeUndefined(); // Password should be removed
+    });
+
+    it('should normalize global role names before change', async () => {
+      mockUsers.changeRole.mockResolvedValueOnce({ success: true });
+
+      await registerUserTools(registry);
+      const tool = registry.getToolDefinition('changeUserRole')!;
+
+      const result = await tool.handler({ id: '1', role: 'member' }, mockContext);
+
+      expect(mockUsers.changeRole).toHaveBeenCalledWith('1', 'global:member');
+      expect(result.role).toBe('global:member');
     });
   });
 
@@ -251,6 +279,58 @@ describe('Additional Tool Tests', () => {
 
       registry.clear();
       expect(registry.getToolNames()).toEqual([]);
+    });
+  });
+
+  describe('Project Tools', () => {
+    beforeEach(async () => {
+      await registerProjectTools(registry);
+    });
+
+    it('should add users to project with normalized roles', async () => {
+      mockProjects.addUsers.mockResolvedValueOnce({ created: true });
+
+      const tool = registry.getToolDefinition('addUsersToProject')!;
+
+      const result = await tool.handler(
+        {
+          projectId: 'project-1',
+          users: [{ id: 'user-1', role: 'editor' }, { id: 'user-2' }],
+        },
+        mockContext
+      );
+
+      expect(mockProjects.addUsers).toHaveBeenCalledWith('project-1', [
+        { userId: 'user-1', role: 'project:editor' },
+        { userId: 'user-2', role: 'project:viewer' },
+      ]);
+
+      expect(result).toMatchObject({
+        success: true,
+        projectId: 'project-1',
+        usersAdded: 2,
+      });
+    });
+
+    it('should change project user role via resource client', async () => {
+      mockProjects.updateUserRole.mockResolvedValueOnce({ ok: true });
+
+      const tool = registry.getToolDefinition('changeUserRoleInProject')!;
+
+      await tool.handler(
+        {
+          projectId: 'project-2',
+          userId: 'user-7',
+          role: 'project:admin',
+        },
+        mockContext
+      );
+
+      expect(mockProjects.updateUserRole).toHaveBeenCalledWith(
+        'project-2',
+        'user-7',
+        'project:admin'
+      );
     });
   });
 });

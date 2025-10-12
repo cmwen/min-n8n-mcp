@@ -134,7 +134,7 @@ export function startHttpServer(mcpServer: MinN8nMcpServer): any {
     res.status(200).json({
       status: 'healthy',
       name: 'min-n8n-mcp',
-      version: '0.1.0',
+      version: getVersion(),
       tools: mcpServer.registry.getToolNames().length,
     });
   });
@@ -161,7 +161,7 @@ export function startHttpServer(mcpServer: MinN8nMcpServer): any {
       transport.onclose = () => {
         if (transport.sessionId) delete transports[transport.sessionId];
       };
-      await server.server.connect(transport);
+      await server.connect(transport);
     } else {
       res.status(400).json({
         jsonrpc: '2.0',

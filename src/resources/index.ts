@@ -69,11 +69,8 @@ export type {
 
 export type { VariableData } from './variables.js';
 
-export type {
-  ProjectData,
-  ProjectUserData,
-} from './projects.js';
+export type { ProjectData, ProjectUserRelation, ProjectUserRole } from './projects.js';
 
-export type { AuditQuery } from './audit.js';
+export type { AuditRequest, AuditCategory } from './audit.js';
 
 export type { SourceControlPullOptions } from './sourceControl.js';

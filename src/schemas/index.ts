@@ -47,6 +47,7 @@ export const ExecutionQuerySchema = z
     workflowId: z.string().optional(),
     status: z.enum(['success', 'error', 'waiting', 'running']).optional(),
     includeData: z.boolean().optional(),
+    projectId: z.string().optional(),
   })
   .merge(PaginationQuerySchema);
 
@@ -244,7 +245,19 @@ export const ToolInputSchemas = {
 
   // Audit tools
   generateAudit: z.object({
-    data: z.unknown().optional(),
+    data: z
+      .object({
+        additionalOptions: z
+          .object({
+            daysAbandonedWorkflow: z.number().int().nonnegative().optional(),
+            categories: z
+              .array(z.enum(['credentials', 'database', 'nodes', 'filesystem', 'instance']))
+              .optional(),
+          })
+          .partial()
+          .optional(),
+      })
+      .optional(),
   }),
 
   // Source control tools

@@ -2,12 +2,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Config } from '../../src/config.js';
 import { createLogger } from '../../src/logging.js';
 import { createServer, startHttpServer } from '../../src/server.js';
+import { getVersion } from '../../src/version.js';
 
 // Mock the HTTP client to avoid needing a real n8n instance
 const mockHttpClient = {
   get: async () => ({ data: [] }),
   post: async () => ({ data: {} }),
   put: async () => ({ data: {} }),
+  patch: async () => ({ data: {} }),
   delete: async () => ({ data: {} }),
 };
 
@@ -72,7 +74,7 @@ describe('MCP Server Integration', () => {
     const data = await response.json();
     expect(data.status).toBe('healthy');
     expect(data.name).toBe('min-n8n-mcp');
-    expect(data.version).toBe('0.1.0');
+    expect(data.version).toBe(getVersion());
     expect(data.tools).toBeGreaterThan(0);
   }, 10000);
 

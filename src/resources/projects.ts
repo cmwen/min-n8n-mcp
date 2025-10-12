@@ -11,9 +11,15 @@ export interface ProjectData {
   type?: 'personal' | 'team';
 }
 
-export interface ProjectUserData {
+export type ProjectUserRole =
+  | 'project:owner'
+  | 'project:admin'
+  | 'project:editor'
+  | 'project:viewer';
+
+export interface ProjectUserRelation {
   userId: string;
-  role: 'owner' | 'admin' | 'editor' | 'viewer';
+  role: ProjectUserRole;
 }
 
 export class ProjectResourceClient {
@@ -53,12 +59,21 @@ export class ProjectResourceClient {
     return this.httpClient.delete(`/projects/${id}`);
   }
 
-  async addUser(projectId: string, userData: ProjectUserData) {
+  async addUsers(projectId: string, relations: ProjectUserRelation[]) {
     this.logger.debug(
-      { projectId, userId: userData.userId, role: userData.role },
-      'Adding user to project'
+      {
+        projectId,
+        relations: relations.map((relation) => ({
+          userId: relation.userId,
+          role: relation.role,
+        })),
+      },
+      'Adding users to project'
     );
-    return this.httpClient.post(`/projects/${projectId}/users`, userData);
+
+    return this.httpClient.post(`/projects/${projectId}/users`, {
+      relations,
+    });
   }
 
   async removeUser(projectId: string, userId: string) {
@@ -68,7 +83,7 @@ export class ProjectResourceClient {
 
   async updateUserRole(projectId: string, userId: string, role: string) {
     this.logger.debug({ projectId, userId, role }, 'Updating user role in project');
-    return this.httpClient.put(`/projects/${projectId}/users/${userId}`, { role });
+    return this.httpClient.patch(`/projects/${projectId}/users/${userId}`, { role });
   }
 
   async listUsers(projectId: string, query: PaginationOptions = {}) {
