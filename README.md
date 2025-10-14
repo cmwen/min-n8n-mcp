@@ -126,7 +126,6 @@ The MCP server exposes comprehensive n8n management capabilities through the fol
 - `deleteWorkflow` - Delete workflows
 - `activateWorkflow` - Activate workflows
 - `deactivateWorkflow` - Deactivate workflows
-- `runWorkflow` - Execute workflows
 - `getWorkflowTags` - Get workflow tags
 - `updateWorkflowTags` - Update workflow tags
 - `transferWorkflow` - Transfer workflows between projects
@@ -341,6 +340,8 @@ npx @cmwen/min-n8n-mcp --print-config
 5. Commit your changes (`git commit -m 'Add amazing feature'`)
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
+
+For a deeper walkthrough of project structure, workflows, and expectations, read the [Repository Guidelines](AGENTS.md).
 
 ### Development Guidelines
 

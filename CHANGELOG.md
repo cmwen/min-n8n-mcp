@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2025-10-14
+
+### Changed
+- **Workflow Execution Tool**: Removed the `runWorkflow` MCP endpoint because the public n8n REST API does not expose a manual execution endpoint. Use workflow triggers (webhooks, schedules, etc.) or the n8n UI to run workflows on demand.
+
+### Fixed
+- **Legacy `runWorkflow` Calls**: For historical references, normalized `workflowId` payloads to `id` so Codex CLI and other clients using legacy shapes validated correctly before deprecation.
+
 ## [1.0.1] - 2025-10-12
 
 ### Fixed

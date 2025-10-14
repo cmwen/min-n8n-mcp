@@ -19,7 +19,6 @@ const MODE_TOOLS = {
     workflows: [
       'listWorkflows',
       'getWorkflow',
-      'runWorkflow',
       'activateWorkflow',
       'deactivateWorkflow',
     ],
@@ -36,7 +35,6 @@ const MODE_TOOLS = {
     workflows: [
       'listWorkflows',
       'getWorkflow',
-      'runWorkflow',
       'activateWorkflow',
       'deactivateWorkflow',
       'createWorkflow',

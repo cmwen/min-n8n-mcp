@@ -148,25 +148,6 @@ export class WorkflowResourceClient {
     return result;
   }
 
-  async run(id: string, input?: any) {
-    this.logger.debug({ id, hasInput: !!input }, 'Running workflow');
-
-    // Note: This endpoint might not exist in current n8n API
-    // This is a best-guess implementation based on common patterns
-    const body: any = { workflowId: id };
-    if (input) {
-      body.input = input;
-    }
-
-    try {
-      return await this.httpClient.post('/executions', body);
-    } catch (error) {
-      // If the above doesn't work, try alternative endpoint
-      this.logger.debug({ id }, 'Trying alternative workflow run endpoint');
-      return await this.httpClient.post(`/workflows/${id}/run`, input ? { input } : {});
-    }
-  }
-
   async getTags(id: string) {
     const cacheKey = `workflow-tags:${id}`;
     const cached = this.cache.get(cacheKey);

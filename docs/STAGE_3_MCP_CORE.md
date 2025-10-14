@@ -130,10 +130,6 @@ export const ToolInputSchemas = {
   deactivateWorkflow: z.object({
     id: IdSchema,
   }),
-  runWorkflow: z.object({
-    id: IdSchema,
-    input: z.unknown().optional(),
-  }),
   getWorkflowTags: z.object({
     id: IdSchema,
   }),
@@ -773,16 +769,6 @@ export async function registerWorkflowTools(registry: ToolRegistry): Promise<voi
     async (input, context) => {
       // TODO: Implement in Stage 5
       context.logger.info('deactivateWorkflow called (placeholder)');
-      return { message: 'Tool not yet implemented' };
-    }
-  ));
-
-  registry.register(createTool(
-    'runWorkflow',
-    'Run a workflow with optional input data',
-    async (input, context) => {
-      // TODO: Implement in Stage 5
-      context.logger.info('runWorkflow called (placeholder)');
       return { message: 'Tool not yet implemented' };
     }
   ));

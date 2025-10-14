@@ -42,11 +42,12 @@ The MCP server registers and exposes the following tools:
 - `deleteWorkflow(id: string)`: Deletes a workflow.
 - `activateWorkflow(id: string)`: Activates a workflow.
 - `deactivateWorkflow(id: string)`: Deactivates a workflow.
-- `runWorkflow(id: string, input?: object)`: Executes a workflow with optional input data.
 - `getWorkflowTags(id: string)`: Gets tags for a workflow.
 - `updateWorkflowTags(id: string, tags: string[])`: Updates tags for a workflow.
 - `transferWorkflow(id: string, projectId: string)`: Transfers a workflow to another project.
 - `getWorkflowStats(id: string)`: Retrieves execution statistics for a workflow.
+
+> **Note:** The public n8n API does not expose an endpoint to start a workflow execution directly. Manual runs must be initiated via the workflow's trigger or the n8n UI.
 
 ### Execution Tools
 - `listExecutions(query?: object)`: Lists all executions, with optional filters (status, workflowId, projectId).

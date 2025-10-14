@@ -639,7 +639,7 @@ export class WorkflowResourceClient {
 1. Create src/resources/workflows.ts with exact content above
 2. Implement all workflow operations with proper error handling
 3. Add caching for frequently accessed data
-4. Handle missing endpoints gracefully (like runWorkflow)
+4. Handle missing endpoints gracefully (e.g., document that manual workflow execution is not supported)
 5. Implement client-side stats computation
 6. Test all workflow operations
 

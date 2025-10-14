@@ -26,7 +26,6 @@ describe('Multiple Modes Feature', () => {
       delete: vi.fn(),
       activate: vi.fn(),
       deactivate: vi.fn(),
-      run: vi.fn(),
       getTags: vi.fn(),
       updateTags: vi.fn(),
       transfer: vi.fn(),
@@ -89,7 +88,6 @@ describe('Multiple Modes Feature', () => {
       // Should include basic workflow tools
       expect(toolNames).toContain('listWorkflows');
       expect(toolNames).toContain('getWorkflow');
-      expect(toolNames).toContain('runWorkflow');
       expect(toolNames).toContain('activateWorkflow');
       expect(toolNames).toContain('deactivateWorkflow');
 
@@ -138,7 +136,6 @@ describe('Multiple Modes Feature', () => {
       // Should include basic workflow tools
       expect(toolNames).toContain('listWorkflows');
       expect(toolNames).toContain('getWorkflow');
-      expect(toolNames).toContain('runWorkflow');
       expect(toolNames).toContain('activateWorkflow');
       expect(toolNames).toContain('deactivateWorkflow');
 

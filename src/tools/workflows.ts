@@ -149,31 +149,6 @@ export async function registerWorkflowTools(registry: ToolRegistry): Promise<voi
 
   registry.register(
     createTool(
-      'runWorkflow',
-      'Execute a workflow manually with optional input data',
-      async (input: ToolInputs['runWorkflow'], context) => {
-        const execution = await context.resources.workflows.run(input.id, input.input);
-
-        context.logger.info(
-          {
-            workflowId: input.id,
-            executionId: execution.id,
-            hasInput: !!input.input,
-          },
-          'Started workflow execution'
-        );
-
-        return {
-          execution,
-          workflowId: input.id,
-          message: 'Workflow execution started',
-        };
-      }
-    )
-  );
-
-  registry.register(
-    createTool(
       'getWorkflowTags',
       'Get all tags associated with a workflow',
       async (input: ToolInputs['getWorkflowTags'], context) => {

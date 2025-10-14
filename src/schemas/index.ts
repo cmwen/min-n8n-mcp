@@ -122,10 +122,6 @@ export const ToolInputSchemas = {
   deactivateWorkflow: z.object({
     id: IdSchema,
   }),
-  runWorkflow: z.object({
-    id: IdSchema,
-    input: z.unknown().optional(),
-  }),
   getWorkflowTags: z.object({
     id: IdSchema,
   }),

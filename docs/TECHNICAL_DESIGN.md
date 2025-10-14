@@ -51,10 +51,7 @@ Assumptions
 - Rate limits are modest; local use primary. We still add conservative backoff and concurrency caps.
 
 Clarifications needed
-1. runWorkflow: PRD lists `runWorkflow(id, input?)` but `openapi.yml` has no execution-create endpoint. How should executions be started? Options:
-   - A) POST /executions with `workflowId` and `input` (common pattern, but missing from spec)
-   - B) POST /workflows/{id}/run
-   - C) Other endpoint (please specify)
+1. runWorkflow: (Resolved) The public `openapi.yml` has no execution-create endpoint. We removed the `runWorkflow` tool and document that n8n only supports execution via workflow triggers or the UI.
 2. getWorkflowStats: Not present in `openapi.yml`. Should we compute stats client-side from `/executions` filtered by `workflowId` (windowed, aggregated), or does an endpoint exist?
 3. Filtering fields: PRD mentions filters (active, tags, name, projectId, status). Please confirm available query params for each list endpoint (workflows, executions, users, tags, projects, variables) beyond `limit`/`cursor`.
 4. Pagination: For `cursor`-based pagination, is `cursor` opaque? Should we expose `autoPaginate` to return a merged list or return raw pages only?
@@ -190,7 +187,6 @@ Workflow Tools
 - deleteWorkflow(id) -> DELETE /workflows/{id}.
 - activateWorkflow(id) -> POST /workflows/{id}/activate.
 - deactivateWorkflow(id) -> POST /workflows/{id}/deactivate.
-- runWorkflow(id, input?) -> MISSING IN SPEC — see Clarifications.
 - getWorkflowTags(id) -> GET /workflows/{id}/tags.
 - updateWorkflowTags(id, tags) -> PUT /workflows/{id}/tags with body (array of tag IDs?).
 - transferWorkflow(id, projectId) -> PUT /workflows/{id}/transfer with body { projectId }.
@@ -355,7 +351,7 @@ Notes
 ## Risks and Mitigations
 
 - Incomplete OpenAPI schemas: Use permissive typing initially; add zod validators for critical fields (ids, role strings).
-- Missing run/stats endpoints: Require clarification; implement client-side alternatives where acceptable.
+- Missing stats endpoint: compute client-side aggregation for workflow stats; document lack of direct execution-create API.
 - Backward-compat changes in n8n: Keep mapping thin; add feature flags and version detection if needed.
 
 
@@ -364,7 +360,7 @@ Notes
 - Many `$ref` placeholders lack concrete schemas (e.g., `credential`, `user`, `error`).
 - Some parameters only list names without types/locations (e.g., `limit`, `cursor`).
 - `transferCredential` tagged under Workflow; should be Credential.
-- Missing endpoint(s) for creating executions (`runWorkflow`).
+- No endpoint for creating executions (tool removed; rely on workflow triggers).
 - No explicit shapes for project-user management payloads.
 
 We can proceed with best-effort pass-through and surface clear errors until spec is completed.
@@ -417,4 +413,4 @@ export function register(server: Server) {
 
 ---
 
-End of technical design. Please review “Clarifications needed” to unblock final tool definitions for runWorkflow and getWorkflowStats, and to confirm payload shapes for project/user operations.
+End of technical design. Please review “Clarifications needed” (noting the removal of `runWorkflow`) to confirm payload shapes for project/user operations and to validate the client-side approach for `getWorkflowStats`.

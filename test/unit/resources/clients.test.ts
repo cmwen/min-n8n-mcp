@@ -208,6 +208,7 @@ describe('Resource Clients', () => {
       expect(mockHttpClient.post).toHaveBeenCalledWith('/workflows/1/activate');
       expect(result).toEqual(mockResult);
     });
+
   });
 
   describe('Execution Client', () => {
