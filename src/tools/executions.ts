@@ -64,7 +64,7 @@ export async function registerExecutionTools(registry: ToolRegistry): Promise<vo
       'deleteExecution',
       'Delete an execution record permanently',
       async (input: ToolInputs['deleteExecution'], context) => {
-        const result = await context.resources.executions.delete(input.id);
+        const _result = await context.resources.executions.delete(input.id);
 
         context.logger.info({ executionId: input.id }, 'Deleted execution');
 

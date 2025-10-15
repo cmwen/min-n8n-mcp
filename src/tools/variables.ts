@@ -75,7 +75,7 @@ export async function registerVariableTools(registry: ToolRegistry): Promise<voi
       'deleteVariable',
       'Delete an environment variable permanently',
       async (input: ToolInputs['deleteVariable'], context) => {
-        const result = await context.resources.variables.delete(input.id);
+        const _result = await context.resources.variables.delete(input.id);
 
         context.logger.info({ variableId: input.id }, 'Deleted variable');
 

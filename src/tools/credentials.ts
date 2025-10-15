@@ -29,7 +29,7 @@ export async function registerCredentialTools(registry: ToolRegistry): Promise<v
       'deleteCredential',
       'Delete a credential permanently',
       async (input: ToolInputs['deleteCredential'], context) => {
-        const result = await context.resources.credentials.delete(input.id);
+        await context.resources.credentials.delete(input.id);
 
         context.logger.info({ credentialId: input.id }, 'Deleted credential');
 
@@ -69,7 +69,7 @@ export async function registerCredentialTools(registry: ToolRegistry): Promise<v
       'transferCredential',
       'Transfer a credential to a different project',
       async (input: ToolInputs['transferCredential'], context) => {
-        const result = await context.resources.credentials.transfer(input.id, input.projectId);
+        await context.resources.credentials.transfer(input.id, input.projectId);
 
         context.logger.info(
           {

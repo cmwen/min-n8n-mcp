@@ -2,9 +2,9 @@ import type { HttpClient } from '../http/client.js';
 import type { Logger } from '../logging.js';
 import { DEFAULT_CACHE_OPTIONS, SimpleCache } from '../util/cache.js';
 import {
+  extractPaginationFromQuery,
   PaginationHelper,
   type PaginationOptions,
-  extractPaginationFromQuery,
 } from '../util/pagination.js';
 
 export interface WorkflowQuery extends PaginationOptions {
@@ -146,25 +146,6 @@ export class WorkflowResourceClient {
     this.invalidateWorkflowCache(id);
 
     return result;
-  }
-
-  async run(id: string, input?: any) {
-    this.logger.debug({ id, hasInput: !!input }, 'Running workflow');
-
-    // Note: This endpoint might not exist in current n8n API
-    // This is a best-guess implementation based on common patterns
-    const body: any = { workflowId: id };
-    if (input) {
-      body.input = input;
-    }
-
-    try {
-      return await this.httpClient.post('/executions', body);
-    } catch (error) {
-      // If the above doesn't work, try alternative endpoint
-      this.logger.debug({ id }, 'Trying alternative workflow run endpoint');
-      return await this.httpClient.post(`/workflows/${id}/run`, input ? { input } : {});
-    }
   }
 
   async getTags(id: string) {

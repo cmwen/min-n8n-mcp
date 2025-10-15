@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createLogger } from '../../../src/logging.js';
 import type { ResourceClients } from '../../../src/resources/index.js';
 import type { ServerContext } from '../../../src/server.js';
-import { ToolRegistry, createTool } from '../../../src/tools/registry.js';
+import { ToolRegistry } from '../../../src/tools/registry.js';
 import { registerWorkflowTools } from '../../../src/tools/workflows.js';
 
 describe('Workflow Tools', () => {
@@ -22,7 +22,6 @@ describe('Workflow Tools', () => {
       delete: vi.fn(),
       activate: vi.fn(),
       deactivate: vi.fn(),
-      run: vi.fn(),
       getTags: vi.fn(),
       updateTags: vi.fn(),
       transfer: vi.fn(),
@@ -266,7 +265,7 @@ describe('Workflow Tools', () => {
       await registerWorkflowTools(registry);
       const tool = registry.getToolDefinition('getWorkflow')!;
 
-      const result = await tool.handler(
+      const _result = await tool.handler(
         {
           id: '1',
           excludePinnedData: true,
@@ -318,43 +317,6 @@ describe('Workflow Tools', () => {
         status: 'active',
         message: 'Workflow activated successfully',
       });
-    });
-  });
-
-  describe('runWorkflow', () => {
-    it('should run workflow with input data', async () => {
-      const mockExecution = { id: 'exec-123', status: 'running' };
-      mockWorkflows.run.mockResolvedValueOnce(mockExecution);
-
-      await registerWorkflowTools(registry);
-      const tool = registry.getToolDefinition('runWorkflow')!;
-
-      const result = await tool.handler(
-        {
-          id: '1',
-          input: { data: 'test' },
-        },
-        mockContext
-      );
-
-      expect(mockWorkflows.run).toHaveBeenCalledWith('1', { data: 'test' });
-      expect(result).toEqual({
-        execution: mockExecution,
-        workflowId: '1',
-        message: 'Workflow execution started',
-      });
-    });
-
-    it('should run workflow without input data', async () => {
-      const mockExecution = { id: 'exec-124', status: 'running' };
-      mockWorkflows.run.mockResolvedValueOnce(mockExecution);
-
-      await registerWorkflowTools(registry);
-      const tool = registry.getToolDefinition('runWorkflow')!;
-
-      const result = await tool.handler({ id: '1' }, mockContext);
-
-      expect(mockWorkflows.run).toHaveBeenCalledWith('1', undefined);
     });
   });
 

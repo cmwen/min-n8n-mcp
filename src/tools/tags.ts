@@ -88,7 +88,7 @@ export async function registerTagTools(registry: ToolRegistry): Promise<void> {
       'deleteTag',
       'Delete a tag permanently',
       async (input: ToolInputs['deleteTag'], context) => {
-        const result = await context.resources.tags.delete(input.id);
+        const _result = await context.resources.tags.delete(input.id);
 
         context.logger.info({ tagId: input.id }, 'Deleted tag');
 

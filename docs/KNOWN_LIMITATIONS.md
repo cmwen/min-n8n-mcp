@@ -20,10 +20,7 @@ The following tools are specified in the PRD but are not currently implemented d
 **Status:** Not Implemented  
 **Reason:** The n8n REST API does not provide a documented endpoint to retry a failed execution. While n8n's UI supports this feature, it's not exposed via the REST API.
 
-**Workaround:** 
-1. Use `getExecution(id)` to retrieve the execution details
-2. Extract the input data from the failed execution
-3. Use `runWorkflow(workflowId, inputData)` to create a new execution with the same inputs
+**Workaround:** No official workaround exists. Executions must be retried through the n8n UI or by re-triggering the workflow through its configured trigger (for example, HTTP webhook or scheduled trigger).
 
 **Future:** This tool will be implemented when n8n adds an official API endpoint (e.g., `POST /executions/{id}/retry`).
 
@@ -47,8 +44,8 @@ The following tools are specified in the PRD but are not currently implemented d
 
 ## API Coverage
 
-### Implemented Tools: 30+
-- ✅ Workflow Management (12 tools)
+### Implemented Tools: 29+
+- ✅ Workflow Management (11 tools)
 - ✅ Execution Management (3 tools) - Missing stop/retry
 - ✅ Credential Management (4 tools)
 - ✅ User Management (5 tools)

@@ -76,7 +76,7 @@ export async function registerProjectTools(registry: ToolRegistry): Promise<void
       'deleteProject',
       'Delete a project permanently along with all its associated resources',
       async (input: ToolInputs['deleteProject'], context) => {
-        const result = await context.resources.projects.delete(input.id);
+        const _result = await context.resources.projects.delete(input.id);
 
         context.logger.info({ projectId: input.id }, 'Deleted project');
 
@@ -142,7 +142,7 @@ export async function registerProjectTools(registry: ToolRegistry): Promise<void
       'deleteUserFromProject',
       'Remove a user from a project',
       async (input: ToolInputs['deleteUserFromProject'], context) => {
-        const result = await context.resources.projects.removeUser(input.projectId, input.userId);
+        const _result = await context.resources.projects.removeUser(input.projectId, input.userId);
 
         context.logger.info(
           {
@@ -167,7 +167,7 @@ export async function registerProjectTools(registry: ToolRegistry): Promise<void
       'changeUserRoleInProject',
       'Change the role of a user within a specific project',
       async (input: ToolInputs['changeUserRoleInProject'], context) => {
-        const result = await context.resources.projects.updateUserRole(
+        const _result = await context.resources.projects.updateUserRole(
           input.projectId,
           input.userId,
           input.role

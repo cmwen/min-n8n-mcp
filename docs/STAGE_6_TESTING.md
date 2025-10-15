@@ -539,40 +539,6 @@ describe('Workflow Tools', () => {
     });
   });
 
-  describe('runWorkflow', () => {
-    it('should run workflow with input data', async () => {
-      const mockExecution = { id: 'exec-123', status: 'running' };
-      mockWorkflows.run.mockResolvedValueOnce(mockExecution);
-
-      await registerWorkflowTools(registry);
-      const tool = registry.getToolDefinition('runWorkflow')!;
-
-      const result = await tool.handler({ 
-        id: '1', 
-        input: { data: 'test' } 
-      }, mockContext);
-
-      expect(mockWorkflows.run).toHaveBeenCalledWith('1', { data: 'test' });
-      expect(result).toEqual({
-        execution: mockExecution,
-        workflowId: '1',
-        message: 'Workflow execution started',
-      });
-    });
-
-    it('should run workflow without input data', async () => {
-      const mockExecution = { id: 'exec-124', status: 'running' };
-      mockWorkflows.run.mockResolvedValueOnce(mockExecution);
-
-      await registerWorkflowTools(registry);
-      const tool = registry.getToolDefinition('runWorkflow')!;
-
-      const result = await tool.handler({ id: '1' }, mockContext);
-
-      expect(mockWorkflows.run).toHaveBeenCalledWith('1', undefined);
-    });
-  });
-
   describe('getWorkflowStats', () => {
     it('should return workflow statistics', async () => {
       const mockStats = {

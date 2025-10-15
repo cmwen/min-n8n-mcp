@@ -23,7 +23,7 @@ vi.mock('express', () => {
     post: vi.fn(),
     get: vi.fn(),
     delete: vi.fn(),
-    listen: vi.fn((port, callback) => {
+    listen: vi.fn((_port, callback) => {
       callback?.();
       return {
         close: vi.fn((callback) => callback?.()),
@@ -143,8 +143,8 @@ describe('Server', () => {
       );
 
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to connect to n8n API',
-        expect.any(Error)
+        expect.objectContaining({ error: expect.any(Error) }),
+        'Failed to connect to n8n API'
       );
     });
 

@@ -237,23 +237,9 @@ await client.callTool({
 });
 ```
 
-#### Run a Workflow with Input Data
+#### Trigger a Workflow
 
-```typescript
-const execution = await client.callTool({
-  name: 'runWorkflow',
-  arguments: {
-    id: 'workflow-id-here',
-    input: {
-      customerId: '12345',
-      action: 'process_order',
-    },
-  },
-});
-
-console.log('Execution ID:', execution.id);
-console.log('Status:', execution.status);
-```
+n8n does not expose a general-purpose REST endpoint to start a workflow execution. To run a workflow on demand, invoke the workflow through its configured trigger (for example, send an HTTP request to the workflow’s webhook URL) or start it manually from the n8n UI.
 
 ### Execution Management
 
@@ -378,7 +364,7 @@ min-n8n-mcp supports three operating modes to balance functionality with complex
 MCP_MODE=basic npx @cmwen/min-n8n-mcp
 ```
 
-Tools: `listWorkflows`, `getWorkflow`, `runWorkflow`, `activateWorkflow`, `deactivateWorkflow`, `listExecutions`, `getExecution`
+Tools: `listWorkflows`, `getWorkflow`, `activateWorkflow`, `deactivateWorkflow`, `listExecutions`, `getExecution`
 
 #### Intermediate Mode (15+ Tools - Default)
 

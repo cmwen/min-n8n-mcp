@@ -555,7 +555,7 @@ npx @cmwen/min-n8n-mcp                 # Run
 
 - [ ] Test connection to n8n instance
 - [ ] Verify API token has correct permissions
-- [ ] Test basic operations (list workflows, run workflow)
+- [ ] Test basic operations (list/inspect workflows, update activation state)
 - [ ] Set appropriate timeout and concurrency values
 - [ ] Enable debug logging initially
 - [ ] Document your configuration

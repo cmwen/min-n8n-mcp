@@ -8,7 +8,7 @@ import type { Config } from './config.js';
 import { HttpClient } from './http/client.js';
 import type { Logger } from './logging.js';
 import { registerAllPrompts } from './prompts/index.js';
-import { type ResourceClients, createResourceClients } from './resources/index.js';
+import { createResourceClients, type ResourceClients } from './resources/index.js';
 import { registerAllTools } from './tools/index.js';
 import { ToolRegistry } from './tools/registry.js';
 import { getVersion } from './version.js';
@@ -35,7 +35,7 @@ export async function createServer(config: Config, logger: Logger): Promise<MinN
     await httpClient.get('/workflows', { limit: 1 });
     logger.info('Successfully connected to n8n API');
   } catch (error) {
-    logger.error('Failed to connect to n8n API', error);
+    logger.error({ error }, 'Failed to connect to n8n API');
     throw new Error(
       `Cannot connect to n8n API at ${config.n8nApiUrl}. Please verify the URL and API token.`
     );
@@ -130,7 +130,7 @@ export function startHttpServer(mcpServer: MinN8nMcpServer): any {
   });
 
   // Health check endpoint
-  app.get('/health', (req, res) => {
+  app.get('/health', (_req, res) => {
     res.status(200).json({
       status: 'healthy',
       name: 'min-n8n-mcp',
@@ -192,7 +192,7 @@ export function startHttpServer(mcpServer: MinN8nMcpServer): any {
   });
 
   // 404 handler - return JSON instead of HTML
-  app.use((req, res) => {
+  app.use((_req, res) => {
     res.status(404).json({ error: 'Not found' });
   });
 

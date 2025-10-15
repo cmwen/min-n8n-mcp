@@ -47,7 +47,7 @@ export async function registerUserTools(registry: ToolRegistry): Promise<void> {
         );
 
         // Remove sensitive data from response
-        const { password, ...safeUser } = user;
+        const { password: _password, ...safeUser } = user;
 
         return {
           ...safeUser,
@@ -84,7 +84,7 @@ export async function registerUserTools(registry: ToolRegistry): Promise<void> {
       'deleteUser',
       'Delete a user account permanently',
       async (input: ToolInputs['deleteUser'], context) => {
-        const result = await context.resources.users.delete(input.id);
+        const _result = await context.resources.users.delete(input.id);
 
         context.logger.info({ userId: input.id }, 'Deleted user');
 
@@ -103,7 +103,7 @@ export async function registerUserTools(registry: ToolRegistry): Promise<void> {
       'Change the global role of a user',
       async (input: ToolInputs['changeUserRole'], context) => {
         const normalizedRole = input.role.includes(':') ? input.role : `global:${input.role}`;
-        const result = await context.resources.users.changeRole(input.id, normalizedRole);
+        const _result = await context.resources.users.changeRole(input.id, normalizedRole);
 
         context.logger.info(
           {

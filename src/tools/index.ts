@@ -1,9 +1,8 @@
-import type { ToolRegistry } from './registry.js';
-
 import { registerAuditTools } from './audit.js';
 import { registerCredentialTools } from './credentials.js';
 import { registerExecutionTools } from './executions.js';
 import { registerProjectTools } from './projects.js';
+import type { ToolRegistry } from './registry.js';
 import { registerSourceControlTools } from './sourceControl.js';
 import { registerTagTools } from './tags.js';
 import { registerUserTools } from './users.js';
@@ -16,13 +15,7 @@ type Mode = 'basic' | 'intermediate' | 'advanced';
 // Define which tools are available in each mode
 const MODE_TOOLS = {
   basic: {
-    workflows: [
-      'listWorkflows',
-      'getWorkflow',
-      'runWorkflow',
-      'activateWorkflow',
-      'deactivateWorkflow',
-    ],
+    workflows: ['listWorkflows', 'getWorkflow', 'activateWorkflow', 'deactivateWorkflow'],
     executions: ['listExecutions', 'getExecution'],
     credentials: [],
     tags: [],
@@ -36,7 +29,6 @@ const MODE_TOOLS = {
     workflows: [
       'listWorkflows',
       'getWorkflow',
-      'runWorkflow',
       'activateWorkflow',
       'deactivateWorkflow',
       'createWorkflow',
@@ -161,4 +153,4 @@ function getToolCategory(toolName: string): keyof typeof MODE_TOOLS.basic | null
 
 // Export all tool types for external use
 export type { ToolDefinition } from './registry.js';
-export { ToolRegistry, createTool } from './registry.js';
+export { createTool, ToolRegistry } from './registry.js';
