@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **Workflow Execution Tool**: Removed the `runWorkflow` MCP endpoint because the public n8n REST API does not expose a manual execution endpoint. Use workflow triggers (webhooks, schedules, etc.) or the n8n UI to run workflows on demand.
+- **Repository Maintenance**: Dropped the unused npm lockfile, ignored it going forward, and removed internal agent notes that belonged in developer docs rather than the published package.
 
 ### Fixed
 - **Legacy `runWorkflow` Calls**: For historical references, normalized `workflowId` payloads to `id` so Codex CLI and other clients using legacy shapes validated correctly before deprecation.
