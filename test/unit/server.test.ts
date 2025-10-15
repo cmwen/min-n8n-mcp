@@ -142,7 +142,7 @@ describe('Server', () => {
         'Cannot connect to n8n API'
       );
 
-      expect(mockLogger.error).toHaveBeenCalledWith( 
+      expect(mockLogger.error).toHaveBeenCalledWith(
         expect.objectContaining({ error: expect.any(Error) }),
         'Failed to connect to n8n API'
       );
