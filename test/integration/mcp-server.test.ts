@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Config } from '../../src/config.js';
 import { createLogger } from '../../src/logging.js';
 import { createServer, startHttpServer } from '../../src/server.js';

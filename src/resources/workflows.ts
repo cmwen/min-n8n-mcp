@@ -2,9 +2,9 @@ import type { HttpClient } from '../http/client.js';
 import type { Logger } from '../logging.js';
 import { DEFAULT_CACHE_OPTIONS, SimpleCache } from '../util/cache.js';
 import {
+  extractPaginationFromQuery,
   PaginationHelper,
   type PaginationOptions,
-  extractPaginationFromQuery,
 } from '../util/pagination.js';
 
 export interface WorkflowQuery extends PaginationOptions {

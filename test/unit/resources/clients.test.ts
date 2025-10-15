@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { HttpClient } from '../../../src/http/client.js';
 import { createLogger } from '../../../src/logging.js';
-import { createResourceClients } from '../../../src/resources/index.js';
 import type { AuditRequest, ProjectUserRelation } from '../../../src/resources/index.js';
+import { createResourceClients } from '../../../src/resources/index.js';
 
 // Mock the HTTP client
 const mockHttpClient = {
@@ -208,7 +207,6 @@ describe('Resource Clients', () => {
       expect(mockHttpClient.post).toHaveBeenCalledWith('/workflows/1/activate');
       expect(result).toEqual(mockResult);
     });
-
   });
 
   describe('Execution Client', () => {

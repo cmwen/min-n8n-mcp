@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createLogger } from '../../../src/logging.js';
 import type { ResourceClients } from '../../../src/resources/index.js';
 import type { ServerContext } from '../../../src/server.js';
-import { ToolRegistry, createTool } from '../../../src/tools/registry.js';
+import { ToolRegistry } from '../../../src/tools/registry.js';
 import { registerWorkflowTools } from '../../../src/tools/workflows.js';
 
 describe('Workflow Tools', () => {
@@ -265,7 +265,7 @@ describe('Workflow Tools', () => {
       await registerWorkflowTools(registry);
       const tool = registry.getToolDefinition('getWorkflow')!;
 
-      const result = await tool.handler(
+      const _result = await tool.handler(
         {
           id: '1',
           excludePinnedData: true,

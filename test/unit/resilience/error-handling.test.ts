@@ -33,7 +33,7 @@ describe('Error Handling and Recovery', () => {
       const logger = createLogger('error');
 
       // Capture log output
-      const logSpy = vi.spyOn(logger, 'error');
+      const _logSpy = vi.spyOn(logger, 'error');
 
       const mockContext = {
         config: {} as any,

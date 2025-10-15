@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpClient } from '../../../src/http/client.js';
-import { HttpError, NetworkError, TimeoutError } from '../../../src/http/errors.js';
+import { HttpError, NetworkError } from '../../../src/http/errors.js';
 import { createLogger } from '../../../src/logging.js';
 
 // Mock undici with factory function

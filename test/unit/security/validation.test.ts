@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createLogger } from '../../../src/logging.js';
 import { safeValidateToolInput, validateToolInput } from '../../../src/schemas/index.js';
 

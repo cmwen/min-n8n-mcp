@@ -110,7 +110,7 @@ describe('Execution Tools', () => {
       await registerExecutionTools(registry);
       const tool = registry.getToolDefinition('getExecution')!;
 
-      const result = await tool.handler(
+      const _result = await tool.handler(
         {
           id: 'exec-1',
           includeData: true,

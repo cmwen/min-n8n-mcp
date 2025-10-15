@@ -76,7 +76,7 @@ export async function registerIssuesPrompt(
             try {
               const workflow = await context.resources.workflows.get(id);
               return workflow;
-            } catch (error) {
+            } catch (_error) {
               return null;
             }
           })

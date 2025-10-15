@@ -1,5 +1,5 @@
 import { type ChildProcess, spawn } from 'node:child_process';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
 import type { Config } from '../../src/config.js';
 import { createLogger } from '../../src/logging.js';
 import { createServer } from '../../src/server.js';

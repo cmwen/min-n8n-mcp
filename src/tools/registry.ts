@@ -1,5 +1,5 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { ToolInputSchemas, type ToolInputs, safeValidateToolInput } from '../schemas/index.js';
+import { safeValidateToolInput, ToolInputSchemas, type ToolInputs } from '../schemas/index.js';
 import type { ServerContext } from '../server.js';
 
 export interface ToolDefinition {
@@ -37,10 +37,7 @@ export class ToolRegistry {
           try {
             const normalizedArgs = normalizeToolArgs(toolName, args);
             // Validate input
-            const validation = safeValidateToolInput(
-              toolName as keyof ToolInputs,
-              normalizedArgs
-            );
+            const validation = safeValidateToolInput(toolName as keyof ToolInputs, normalizedArgs);
             if (!validation.success) {
               context.logger.error(
                 {

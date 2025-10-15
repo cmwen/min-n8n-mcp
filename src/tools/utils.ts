@@ -79,7 +79,13 @@ export function sanitizeUserData(user: any): any {
     return user;
   }
 
-  const { password, apiKey, token, secret, ...sanitized } = user;
+  const {
+    password: _password,
+    apiKey: _apiKey,
+    token: _token,
+    secret: _secret,
+    ...sanitized
+  } = user;
   return sanitized;
 }
 

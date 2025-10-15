@@ -39,7 +39,7 @@ export function getVersion(): string {
 
     // Fallback if package.json not found
     return '0.1.0';
-  } catch (error) {
+  } catch (_error) {
     // Fallback version if reading fails
     return '0.1.0';
   }

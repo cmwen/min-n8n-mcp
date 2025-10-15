@@ -133,7 +133,6 @@ function buildWorkflowCreationGuidance(
 
   // Analyze workflow structure
   const nodes = sourceWorkflow.nodes || [];
-  const connections = sourceWorkflow.connections || {};
 
   guidance += `**Nodes**: ${nodes.length} total\n`;
 
@@ -317,7 +316,7 @@ function generateWorkflowStructure(triggerNodes: any[], actionNodes: any[]): str
   return structure;
 }
 
-function generateModificationSuggestions(description: string, sourceWorkflow: any): string {
+function generateModificationSuggestions(description: string, _sourceWorkflow: any): string {
   const desc = description.toLowerCase();
   let suggestions = '';
 

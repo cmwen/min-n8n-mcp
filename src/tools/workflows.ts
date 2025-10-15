@@ -96,7 +96,7 @@ export async function registerWorkflowTools(registry: ToolRegistry): Promise<voi
       'deleteWorkflow',
       'Delete a workflow permanently',
       async (input: ToolInputs['deleteWorkflow'], context) => {
-        const result = await context.resources.workflows.delete(input.id);
+        const _result = await context.resources.workflows.delete(input.id);
 
         context.logger.info({ workflowId: input.id }, 'Deleted workflow');
 
@@ -114,7 +114,7 @@ export async function registerWorkflowTools(registry: ToolRegistry): Promise<voi
       'activateWorkflow',
       'Activate a workflow to enable automatic execution',
       async (input: ToolInputs['activateWorkflow'], context) => {
-        const result = await context.resources.workflows.activate(input.id);
+        const _result = await context.resources.workflows.activate(input.id);
 
         context.logger.info({ workflowId: input.id }, 'Activated workflow');
 
@@ -133,7 +133,7 @@ export async function registerWorkflowTools(registry: ToolRegistry): Promise<voi
       'deactivateWorkflow',
       'Deactivate a workflow to prevent automatic execution',
       async (input: ToolInputs['deactivateWorkflow'], context) => {
-        const result = await context.resources.workflows.deactivate(input.id);
+        const _result = await context.resources.workflows.deactivate(input.id);
 
         context.logger.info({ workflowId: input.id }, 'Deactivated workflow');
 
@@ -175,7 +175,7 @@ export async function registerWorkflowTools(registry: ToolRegistry): Promise<voi
       'updateWorkflowTags',
       'Update the tags associated with a workflow',
       async (input: ToolInputs['updateWorkflowTags'], context) => {
-        const result = await context.resources.workflows.updateTags(input.id, input.tags);
+        const _result = await context.resources.workflows.updateTags(input.id, input.tags);
 
         context.logger.info(
           {
@@ -201,7 +201,7 @@ export async function registerWorkflowTools(registry: ToolRegistry): Promise<voi
       'transferWorkflow',
       'Transfer a workflow to a different project',
       async (input: ToolInputs['transferWorkflow'], context) => {
-        const result = await context.resources.workflows.transfer(input.id, input.projectId);
+        const _result = await context.resources.workflows.transfer(input.id, input.projectId);
 
         context.logger.info(
           {

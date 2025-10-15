@@ -2,9 +2,9 @@ import { fetch } from 'undici';
 import type { Config } from '../config.js';
 import type { Logger } from '../logging.js';
 import { getVersion } from '../version.js';
-import { HttpError, NetworkError, TimeoutError, logError } from './errors.js';
-import { DEFAULT_RATE_LIMIT_CONFIG, createRateLimiter } from './rateLimit.js';
-import { DEFAULT_RETRY_CONFIG, type RetryConfig, shouldRetryMethod, withRetry } from './retry.js';
+import { HttpError, NetworkError, TimeoutError } from './errors.js';
+import { createRateLimiter, DEFAULT_RATE_LIMIT_CONFIG } from './rateLimit.js';
+import { DEFAULT_RETRY_CONFIG, type RetryConfig, withRetry } from './retry.js';
 
 export interface RequestOptions {
   method?: string;

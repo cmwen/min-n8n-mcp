@@ -53,7 +53,7 @@ export async function registerToggleWorkflowPrompt(
             if (workflow) {
               targetWorkflows = [workflow];
             }
-          } catch (error) {
+          } catch (_error) {
             throw new Error(`Workflow with ID ${args.workflowId} not found`);
           }
         } else if (args.workflowName) {
@@ -265,7 +265,7 @@ function buildStatusReport(workflows: any[]): string {
 
 async function buildActivationPlan(
   workflows: any[],
-  context: ServerContext,
+  _context: ServerContext,
   activate: boolean
 ): Promise<string> {
   const action = activate ? 'Activation' : 'Deactivation';
@@ -331,7 +331,7 @@ async function buildActivationPlan(
   return plan;
 }
 
-async function buildTogglePlan(workflows: any[], context: ServerContext): Promise<string> {
+async function buildTogglePlan(workflows: any[], _context: ServerContext): Promise<string> {
   let plan = '## 🔄 Toggle Plan\n\n';
 
   const toActivate = workflows.filter((w) => !w.active);
